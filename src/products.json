@@ -1,0 +1,22 @@
+[
+  {
+    "title": "Falda",
+    "description": "parrilla",
+    "code": "fal123",
+    "price": 1500,
+    "status": true,
+    "stock": 150,
+    "category": "corte para parrilla",
+    "thumbnails": []
+  },
+  {
+    "title": "Marucha Parrillera",
+    "description": "parrilla",
+    "code": "mar123",
+    "price": 1500,
+    "status": true,
+    "stock": 150,
+    "category": "corte para parrilla",
+    "thumbnails": []
+  }
+]
