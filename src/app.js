@@ -1,6 +1,6 @@
 import express from 'express'
 import productRouter from './routes/products.routes.js'
-// import cartRouter from './routes/carts.routes.js'
+import cartRouter from './routes/carts.routes.js'
 // import routerViews from './routes/views.routes.js'
 import handlebars from 'express-handlebars'
 import __dirname from './utils.js'
@@ -19,7 +19,7 @@ app.use(express.static(__dirname + '/public'));
 // app.use('/', routerViews);
 // app.use('/realtimeproducts', routerViews);
 app.use('/api/products', productRouter);
-// app.use('/api/carts', cartRouter );
+app.use('/api/carts', cartRouter );
 app.get('/', (req, res) => {
     res.send('Bienvenidos a Don Pedro Carnes!')});
 
