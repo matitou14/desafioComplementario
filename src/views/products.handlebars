@@ -1,9 +1,11 @@
 <div>
     <h1>Listado de productos</h1>
+    {{#each products}}
+    <h1>{{title}}</h1>
+    <p> Descripción:{{description}}</p>
+    <img src="{{thumbnails}}" alt="{{title}}" height="150" >
+    <p>Precio: {{price}}</p>
+    {{/each}}
 
- <h1>{{products.title}}</h1>
-<p>{{prod.description}}</p>
-<img src="{{prod.imageUrl}}" alt="{{prod.title}}">
-<p>Precio: {{prod.price}}</p>
-
+ 
 </div>

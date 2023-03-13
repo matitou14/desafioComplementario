@@ -6,10 +6,12 @@ import __dirname from "../utils.js";
 
 const router = Router();
 
-const prodfile = path.join(__dirname, 'products.json');
-
-
 const products = []
+
+const prodfile = path.join(__dirname, 'data', 'products.json');
+
+
+
 
 
 async function getProducts() {
@@ -20,8 +22,8 @@ async function getProducts() {
     } catch (error) {
       console.error(error);
       return [];
-    }
-  }
+    }  
+  }  
 
 async function getProductById(productId) {
   try {
@@ -31,25 +33,27 @@ async function getProductById(productId) {
   } catch (error) {
     console.error(error);
     return null;
-  }
-}
+  }  
+}  
 
 
 router.get('/', async (req, res) => {
   const products = await productModel.find().lean().exec();
   res.render('products', { products });
   console.log(products);
-});
+});  
+
+
 
 router.get('/:pid', async (req, res) => {
   const { pid } = req.params;
-  const prod = await productModel.findOne({ pid: pid }).lean().exec();
+  const prod = await productModel.findOne({ _id: pid }).lean().exec();
   if (prod) {
     res.render("index", { prod });
   } else {
     res.status(404).send('Product not found');
-  }
-});
+  }    
+});  
 
 async function getNextProductId() {
   try {
@@ -59,8 +63,8 @@ async function getNextProductId() {
   } catch (error) {
     console.error(error);
     return 1;
-  }
-}
+  }  
+}  
 
 router.post('/', async (req, res) => {
   const newProduct = req.body;
@@ -77,49 +81,90 @@ router.post('/', async (req, res) => {
   } catch (error) {
     console.error(error);
     res.status(500).send('Internal Server Error');
+  }  
+});  
+
+
+// router.put('/:pid', (req, res) => {
+//   const { pid } = req.params;  
+//   const { title, description, code, price, status, stock, category, thumbnails } = req.body;
+//   const products = getProducts();
+//   const index = products.findIndex(p => p.id === parseInt(pid));
+
+//   if (index === -1) {
+//     res.status(404).send('Product not found');  
+//   } else {
+//     products[index] = {
+//       id: parseInt(pid),  
+//       title: title || products[index].title,
+//       description: description || products[index].description,
+//       code: code || products[index].code,
+//       price: price || products[index].price,
+//       status: status || products[index].status,
+//       stock: stock || products[index].stock,
+//       category: category || products[index].category,
+//       thumbnails: thumbnails || products[index].thumbnails
+//     };
+//     fs.writeFileSync(prodfile, JSON.stringify(products, null, 2));
+//     res.json(products[index]);
+//   }
+// });
+
+// USING MONGOOSE
+
+router.put('/:pid', async (req, res) => {
+  const {pid} = req.params;
+  const {title, description, code, price, status, stock, category, thumbnails} =req.body;
+  try{
+    const product = await productModel.findOneAndUpdate({_id: pid},{
+      title,
+      description,
+      code,
+      price,
+      status,
+      stock,
+      category,
+      thumbnails
+    }, {new: true});
+    if (!product){
+    return res.status(404).json({message:'Product not found'});
+   
   }
+  res.json(product);
+} catch (error){
+  console.error(error);
+  res.status(500).send('Internal Server Error');}
 });
 
-
-router.put('/:pid', (req, res) => {
+router.delete('/:pid', async (req, res) => {
   const { pid } = req.params;
-  const { title, description, code, price, status, stock, category, thumbnails } = req.body;
-  const products = getProducts();
-  const index = products.findIndex(p => p.id === parseInt(pid));
-
-  if (index === -1) {
-    res.status(404).send('Product not found');
-  } else {
-    products[index] = {
-      id: parseInt(pid),
-      title: title || products[index].title,
-      description: description || products[index].description,
-      code: code || products[index].code,
-      price: price || products[index].price,
-      status: status || products[index].status,
-      stock: stock || products[index].stock,
-      category: category || products[index].category,
-      thumbnails: thumbnails || products[index].thumbnails
-    };
-    fs.writeFileSync(prodfile, JSON.stringify(products, null, 2));
-    res.json(products[index]);
-  }
-});
-
-
-router.delete('/:pid', (req, res) => {
-  const { pid } = req.params;
-  const products = getProducts();
-  const index = products.findIndex(p => p.id === parseInt(pid));
-
-  if (index === -1) {
-    res.status(404).send('Product not found');
-  } else {
-    products.splice(index, 1);
-    fs.writeFileSync(prodfile, JSON.stringify(products, null, 2));
+  try {
+    const deletedProduct = await productModel.findByIdAndDelete(pid);
+    if (!deletedProduct) {
+      return res.status(404).send('Product not found');
+    }
     res.status(204).send();
+  } catch (error) {
+    console.error(error);
+    res.status(500).send('Internal Server Error');
   }
 });
+
+
+
+// router.delete('/:pid', (req, res) => {
+//   const { pid } = req.params;
+//   const products = getProducts();
+//   const index = products.findIndex(p => p.id === parseInt(pid));
+
+//   if (index === -1) {
+//     res.status(404).send('Product not found');
+//   } else {
+//     products.splice(index, 1);
+//     fs.writeFileSync(prodfile, JSON.stringify(products, null, 2));
+//     res.status(204).send();
+//   }
+// });
 
 
 
