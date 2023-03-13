@@ -1,10 +1,12 @@
 import express from 'express'
+import { Server} from 'socket.io';
 import productRouter from './routes/products.routes.js'
 import cartRouter from './routes/carts.routes.js'
-// import routerViews from './routes/views.routes.js'
+import routerViews from './routes/views.routes.js'
 import handlebars from 'express-handlebars'
 import __dirname from './utils.js'
 import mongoose from 'mongoose'
+
 
 const app = express()
 
@@ -16,7 +18,7 @@ app.engine('handlebars', handlebars.engine());
 app.set('views', `${__dirname}/views`);
 app.set('view engine', 'handlebars');
 app.use(express.static(__dirname + '/public'));
-// app.use('/', routerViews);
+app.use('/', routerViews);
 // app.use('/realtimeproducts', routerViews);
 app.use('/api/products', productRouter);
 app.use('/api/carts', cartRouter );
@@ -30,6 +32,16 @@ mongoose.connect(uri)
     console.log('Connected to database');
     const server = app.listen(8080, ( () => console.log('Server running on 8080 port')));
     server.on ('error', e => console.log(e));
+    const io = new Server(server)
+    io.on('connection', socket => {
+        console.log('New client connected');
+        socket.on('disconnect', () => console.log('Client disconnected'));
+        socket.on('new-message', (data) => {
+            io.sockets.emit('messages', data);
+        });
+    })
+
+   
   })
   .catch(error => {
     console.log('Error connecting to database', error);
