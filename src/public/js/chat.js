@@ -13,10 +13,11 @@ swal.fire({
       },
       allowOutsideClick: false,
     }).then((result) => {
-      const user = result.value;
+      user = result.value; // update the user variable here
       document.getElementById("mail").innerHTML = user
       // socket.emit('new-user', user)
     });
+
 
 
     chatbox.addEventListener('keyup', (e) => {
@@ -30,3 +31,24 @@ swal.fire({
             }
         }      
     })
+    socket.on ('logs', data => {
+        const divLog = document.getElementById('messageLogs')
+        let messages = ""
+        data.reverse().forEach(element => {
+            messages +=  `<p> ${element.user}: ${element.message}</p>`
+        
+        });
+        divLog.innerHTML = messages
+    })
+
+    socket.on('message', data => {
+        const { user, message } = data;
+        const chat = new chat({ user, message });
+        chat.save((err, savedChat) => {
+          if (err) {
+            console.error(err);
+          } else {
+            console.log('Mensaje guardado:', savedChat);
+          }
+        });
+      });

@@ -25,6 +25,8 @@ app.use('/api/carts', cartRouter );
 app.get('/', (req, res) => {
     res.send('Bienvenidos a Don Pedro Carnes!')});
 
+let messages = []
+
 const uri = "mongodb+srv://matitouthe14:Alejo.2510@cluster0.rexogvr.mongodb.net/ecommerce?retryWrites=true&w=majority"
 mongoose.set('strictQuery', false)
 mongoose.connect(uri)
@@ -36,8 +38,10 @@ mongoose.connect(uri)
     io.on('connection', socket => {
         console.log('New client connected');
         socket.on('disconnect', () => console.log('Client disconnected'));
-        socket.on('new-message', (data) => {
-            io.sockets.emit('messages', data);
+        socket.on('message', data => {
+            messages.push(data)
+            io.emit('logs', messages)
+    
         });
     })
 
