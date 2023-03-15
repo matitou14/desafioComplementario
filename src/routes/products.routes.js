@@ -66,14 +66,17 @@ async function getNextProductId() {
   }  
 }  
 
+
+
 router.post('/', async (req, res) => {
+  
   const newProduct = req.body;
 
   try {
     let products = await getProducts();
     const newId = await getNextProductId();
     const prodGenerated = new productModel(newProduct)  
-    await prodGenerated.save()
+  await prodGenerated.save()
     res.redirect(`/api/products'${prodGenerated.name}`)
     products.push(newProduct);
     fs.writeFileSync(prodfile, JSON.stringify(products, null, 2));
@@ -83,6 +86,11 @@ router.post('/', async (req, res) => {
     res.status(500).send('Internal Server Error');
   }  
 });  
+
+
+
+
+
 
 
 // router.put('/:pid', (req, res) => {

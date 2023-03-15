@@ -41,9 +41,9 @@ swal.fire({
         divLog.innerHTML = messages
     })
 
-    socket.on('message', data => {
+    socket.on('logs', data => {
         const { user, message } = data;
-        const chat = new chat({ user, message });
+        let chat = new chat({ user, message });
         chat.save((err, savedChat) => {
           if (err) {
             console.error(err);
