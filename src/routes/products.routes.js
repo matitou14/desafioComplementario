@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 import productModel from "../dao/models/products.models.js";
 import __dirname from "../utils.js";
+import mongoosePaginate from 'mongoose-paginate-v2';
 
 const router = Router();
 
@@ -51,7 +52,7 @@ router.get('/', async (req, res) => {
     pipeline.push({ $skip: (page - 1) * limit });
     pipeline.push({ $limit: parseInt(limit) });
 
-    const products = await productModel.aggregate(pipeline).lean().exec();
+    const products = await productModel.aggregate(pipeline).exec();
     const count = await productModel.aggregate(countPipeline).exec();
 
     const totalPages = Math.ceil(count[0].count / limit);

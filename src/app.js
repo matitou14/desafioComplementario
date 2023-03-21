@@ -21,6 +21,7 @@ app.use(express.static(__dirname + '/public'));
 app.use('/', routerViews);
 // app.use('/realtimeproducts', routerViews);
 app.use('/api/products', productRouter);
+app.use('/products' ,productRouter );
 app.use('/api/carts', cartRouter );
 app.get('/', (req, res) => {
     res.send('Bienvenidos a Don Pedro Carnes!')});

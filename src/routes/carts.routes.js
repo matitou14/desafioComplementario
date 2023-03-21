@@ -5,6 +5,7 @@ import productModel from "../dao/models/products.models.js";
 
 const cartRouter = Router();
 
+// Create a new cart
 cartRouter.post('/', async (req, res) => {
   const newCart = new cartModel({ products: [] });
   try {
@@ -16,31 +17,20 @@ cartRouter.post('/', async (req, res) => {
   }
 });
 
+// Get all carts with their products
 cartRouter.get('/', async (req, res) => {
   try {
-    const carts = await cartModel.find();
+    const carts = await cartModel.find().populate('products.product');
     res.json(carts);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
 
+// Add a product to a cart
 cartRouter.post('/:cid/products/:pid', async (req, res) => {
   const { cid, pid } = req.params;
   const { quantity } = req.body;
-
-  const newProd = new productModel({
-    name: 'product',
-    quantity: 3,
-  });
-  
-  newProd.save()
-    .then(savedProduct => {
-      console.log('Product saved:', savedProduct);
-    })
-    .catch(err => {
-      console.error(err);
-    });
 
   try {
     const cart = await cartModel.findById(cid);
@@ -77,4 +67,88 @@ cartRouter.post('/:cid/products/:pid', async (req, res) => {
   }
 });
 
-export default cartRouter;
+// Update a cart with an array of products
+cartRouter.put('/:cid', async (req, res) => {
+  const { cid } = req.params;
+  const { products } = req.body;
+
+  try {
+    const cart = await cartModel.findById(cid);
+    if (!cart) {
+      res.status(404).send('Cart not found');
+      return;
+    }
+
+    // Remove all products from the cart
+    cart.products = [];
+
+    // Add the new products to the cart
+    for (const product of products) {
+      const existingProduct = await productModel.findById(product.product);
+      if (!existingProduct) {
+        res.status(404).send(`Product with ID ${product.product} not found`);
+        return;
+      }
+      cart.products.push({ product: existingProduct._id, quantity: product.quantity });
+    }
+
+    // Save the updated cart to the database
+    const savedCart = await cart.save();
+
+    // Return the updated cart
+    res.status(200).json(savedCart);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+// Update the quantity of a product in a cart
+cartRouter.put('/:cid/products/:pid', async (req, res) => {
+  const { cid, pid } = req.params;
+  const { quantity } = req.body;
+
+  try {
+    const cart = await cartModel.findById(cid);
+    if (!cart) {
+      res.status(404).send('Cart not found');
+      return;
+    }
+
+    const product = cart.products.find(p => p.product.toString() === pid);
+    if (!product) {
+      res.status(404).send('Product not found');
+      return;
+    }
+
+    product.quantity = parseInt(quantity);
+    const savedCart = await cart.save();
+    res.json(savedCart);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+
+// Delete all products from a cart
+cartRouter.delete('/:cid', async (req, res) => {
+  const { cid } = req.params;
+
+  try {
+    const updatedCart = await cartModel.findByIdAndUpdate(
+      cid,
+      { products: [] },
+      { new: true }
+    ).populate('products.product');
+
+    if (!updatedCart) {
+      res.status(404).send('Cart not found');
+      return;
+    }
+
+    res.json(updatedCart);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+  }
+});
+
+export default cartRouter
