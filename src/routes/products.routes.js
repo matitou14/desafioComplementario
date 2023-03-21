@@ -35,14 +35,50 @@ async function getProductById(productId) {
     return null;
   }  
 }  
-
-
 router.get('/', async (req, res) => {
-  const products = await productModel.find().lean().exec();
-  res.render('products', { products });
-  console.log(products);
-});  
+  try {
+    const { limit = 10, page = 1, sort, query } = req.query;
 
+    const pipeline = [];
+    if (query) { 
+      pipeline.push({ $match: { category: query } });
+    }
+    if (sort) {
+      const sortOrder = sort === 'asc' ? 1 : -1; 
+      pipeline.push({ $sort: { price: sortOrder } });
+    }
+    const countPipeline = pipeline.concat({ $count: "count" });
+    pipeline.push({ $skip: (page - 1) * limit });
+    pipeline.push({ $limit: parseInt(limit) });
+
+    const products = await productModel.aggregate(pipeline).lean().exec();
+    const count = await productModel.aggregate(countPipeline).exec();
+
+    const totalPages = Math.ceil(count[0].count / limit);
+    const hasNextPage = page < totalPages;
+    const hasPrevPage = page > 1;
+    const prevPage = hasPrevPage ? page - 1 : null;
+    const nextPage = hasNextPage ? page + 1 : null;
+    const prevLink = hasPrevPage ? `${req.baseUrl}?limit=${limit}&page=${prevPage}&sort=${sort}&query=${query}` : null;
+    const nextLink = hasNextPage ? `${req.baseUrl}?limit=${limit}&page=${nextPage}&sort=${sort}&query=${query}` : null;
+
+    res.json({
+      status: "success",
+      payload: products,
+      totalPages,
+      prevPage,
+      nextPage,
+      page,
+      hasPrevPage,
+      hasNextPage,
+      prevLink,
+      nextLink,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 
 router.get('/:pid', async (req, res) => {
@@ -87,38 +123,6 @@ router.post('/', async (req, res) => {
   }  
 });  
 
-
-
-
-
-
-
-// router.put('/:pid', (req, res) => {
-//   const { pid } = req.params;  
-//   const { title, description, code, price, status, stock, category, thumbnails } = req.body;
-//   const products = getProducts();
-//   const index = products.findIndex(p => p.id === parseInt(pid));
-
-//   if (index === -1) {
-//     res.status(404).send('Product not found');  
-//   } else {
-//     products[index] = {
-//       id: parseInt(pid),  
-//       title: title || products[index].title,
-//       description: description || products[index].description,
-//       code: code || products[index].code,
-//       price: price || products[index].price,
-//       status: status || products[index].status,
-//       stock: stock || products[index].stock,
-//       category: category || products[index].category,
-//       thumbnails: thumbnails || products[index].thumbnails
-//     };
-//     fs.writeFileSync(prodfile, JSON.stringify(products, null, 2));
-//     res.json(products[index]);
-//   }
-// });
-
-// USING MONGOOSE
 
 router.put('/:pid', async (req, res) => {
   const {pid} = req.params;
