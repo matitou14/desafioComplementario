@@ -20,12 +20,24 @@ cartRouter.post('/', async (req, res) => {
 // Get all carts with their products
 cartRouter.get('/', async (req, res) => {
   try {
-    const carts = await cartModel.find().populate('products.product');
+    const carts = await cartModel.find().populate('products.id');
     res.json(carts);
   } catch (error) {
     res.status(500).json({ message: error.message });
   }
 });
+
+cartRouter.get('/:cid', async (req, res) => {
+  const cartId = req.params.cid;
+  try {
+    const cart = await cartModel.findById(cartId).populate('products');
+    res.render('carts', { cart });
+  } catch (err) {
+    res.status(500).json({ message: err.message });
+  }
+});
+
+
 
 // Add a product to a cart
 cartRouter.post('/:cid/products/:pid', async (req, res) => {

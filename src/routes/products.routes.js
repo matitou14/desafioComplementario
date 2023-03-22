@@ -15,30 +15,30 @@ const prodfile = path.join(__dirname, 'data', 'products.json');
 
 
 
-async function getProducts() {
-    try {
-      const data = await fs.promises.readFile(prodfile);
-      const parsedData = JSON.parse(data);
-      return parsedData;
-    } catch (error) {
-      console.error(error);
-      return [];
-    }  
-  }  
+// async function getProducts() {
+//     try {
+//       const data = await fs.promises.readFile(prodfile);
+//       const parsedData = JSON.parse(data);
+//       return parsedData;
+//     } catch (error) {
+//       console.error(error);
+//       return [];
+//     }  
+//   }  
 
-async function getProductById(productId) {
-  try {
-    const products = await getProducts();
-    const product = products.find(p => p.id === productId);
-    return product;
-  } catch (error) {
-    console.error(error);
-    return null;
-  }  
-}  
+// async function getProductById(productId) {
+//   try {
+//     const products = await getProducts();
+//     const product = products.find(p => p.id === productId);
+//     return product;
+//   } catch (error) {
+//     console.error(error);
+//     return null;
+//   }  
+// }  
 router.get('/', async (req, res) => {
   try {
-    const { limit = 10, page = 1, sort, query } = req.query;
+    const { limit = 3, page = 1, sort, query } = req.query;
 
     const pipeline = [];
     if (query) { 
@@ -60,12 +60,11 @@ router.get('/', async (req, res) => {
     const hasPrevPage = page > 1;
     const prevPage = hasPrevPage ? page - 1 : null;
     const nextPage = hasNextPage ? page + 1 : null;
-    const prevLink = hasPrevPage ? `${req.baseUrl}?limit=${limit}&page=${prevPage}&sort=${sort}&query=${query}` : null;
-    const nextLink = hasNextPage ? `${req.baseUrl}?limit=${limit}&page=${nextPage}&sort=${sort}&query=${query}` : null;
+    const prevLink = hasPrevPage ? `${req.baseUrl}/products?limit=${limit}&page=${prevPage}&sort=${sort}&query=${query}` : null;
+    const nextLink = hasNextPage ? `${req.baseUrl}/products?limit=${limit}&page=${nextPage}&sort=${sort}&query=${query}` : null;
 
-    res.json({
-      status: "success",
-      payload: products,
+    res.render('products', {
+      products,
       totalPages,
       prevPage,
       nextPage,
@@ -81,6 +80,16 @@ router.get('/', async (req, res) => {
   }
 });
 
+router.get('/products/:id', async (req, res) => {
+  try {
+    const productId = req.params.id;
+    const product = await productModel.findById(productId).exec();
+    res.render('product', { product });
+  } catch (error) {
+    console.log(error);
+    res.status(500).send('Internal Server Error');
+  }
+});
 
 router.get('/:pid', async (req, res) => {
   const { pid } = req.params;
