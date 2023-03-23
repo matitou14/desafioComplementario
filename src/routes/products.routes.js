@@ -1,9 +1,11 @@
-import { Router } from "express";
+import { query, Router } from "express";
 import fs from 'fs';
 import path from 'path';
 import productModel from "../dao/models/products.models.js";
 import __dirname from "../utils.js";
 import mongoosePaginate from 'mongoose-paginate-v2';
+
+
 
 const router = Router();
 
@@ -36,49 +38,39 @@ const prodfile = path.join(__dirname, 'data', 'products.json');
 //     return null;
 //   }  
 // }  
+// 
+
 router.get('/', async (req, res) => {
   try {
-    const { limit = 3, page = 1, sort, query } = req.query;
-
-    const pipeline = [];
-    if (query) { 
-      pipeline.push({ $match: { category: query } });
-    }
-    if (sort) {
-      const sortOrder = sort === 'asc' ? 1 : -1; 
-      pipeline.push({ $sort: { price: sortOrder } });
-    }
-    const countPipeline = pipeline.concat({ $count: "count" });
-    pipeline.push({ $skip: (page - 1) * limit });
-    pipeline.push({ $limit: parseInt(limit) });
-
-    const products = await productModel.aggregate(pipeline).exec();
-    const count = await productModel.aggregate(countPipeline).exec();
-
-    const totalPages = Math.ceil(count[0].count / limit);
-    const hasNextPage = page < totalPages;
-    const hasPrevPage = page > 1;
-    const prevPage = hasPrevPage ? page - 1 : null;
-    const nextPage = hasNextPage ? page + 1 : null;
-    const prevLink = hasPrevPage ? `${req.baseUrl}/products?limit=${limit}&page=${prevPage}&sort=${sort}&query=${query}` : null;
-    const nextLink = hasNextPage ? `${req.baseUrl}/products?limit=${limit}&page=${nextPage}&sort=${sort}&query=${query}` : null;
-
-    res.render('products', {
-      products,
-      totalPages,
-      prevPage,
-      nextPage,
+    const { page = 1 } = req.query;
+    const limit = 4;
+    
+    const options = {
       page,
-      hasPrevPage,
-      hasNextPage,
+      limit,
+      lean: true,
+      sort: { price: 1 }
+    };
+    
+    const result = await productModel.paginate({}, options);
+    const prevLink = result.hasPrevPage ? `/products?page=${result.prevPage}` : '';
+    const nextLink = result.hasNextPage ? `/products?page=${result.nextPage}` : '';
+    res.render('products', { 
+      products: result.docs, 
+      totalPages: result.totalPages,
+      prevPage: result.prevPage,
+      nextPage: result.nextPage,
+      page: result.page,
+      hasPrevPage: result.hasPrevPage,
+      hasNextPage: result.hasNextPage,
       prevLink,
-      nextLink,
+      nextLink
     });
-  } catch (error) {
-    console.log(error);
-    res.status(500).send('Internal Server Error');
-  }
-});
+    } catch (error) {
+      console.log(error);
+      res.status(500).send('Internal Server Error');
+      }
+      });
 
 router.get('/products/:id', async (req, res) => {
   try {

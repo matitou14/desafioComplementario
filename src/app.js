@@ -21,8 +21,7 @@ app.set('view engine', 'handlebars');
 app.use(express.static(__dirname + '/public'));
 // app.use('/', routerViews);
 // app.use('/realtimeproducts', routerViews);
-app.use('/api/products', productRouter);
-app.use('/products' ,productRouter );
+app.use('/products', productRouter );
 app.use('/carts', cartRouter );
 app.use('/api/carts', cartRouter );
 app.get('/', (req, res) => {

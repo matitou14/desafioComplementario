@@ -5,116 +5,115 @@ import productModel from "../dao/models/products.models.js";
 
 const cartRouter = Router();
 
-// Create a new cart
-cartRouter.post('/', async (req, res) => {
-  const newCart = new cartModel({ products: [] });
+
+// GET /api/carts/:cid
+cartRouter.get("/cart/:cid", async (req, res) => {
+  const { cid } = req.params;
+
   try {
-    const savedCart = await newCart.save();
-    res.status(201).json(savedCart);
+    const cart = await cartModel.findById(cid).populate('products.product').exec();
+
+    if (!cart) {
+      return res.status(404).json({ message: 'Cart not found' });
+    }
+
+    return res.render('cart', { cart });
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: error.message });
+    return res.status(500).json({ message: 'Internal server error' });
   }
 });
 
-// Get all carts with their products
-cartRouter.get('/', async (req, res) => {
-  try {
-    const carts = await cartModel.find().populate('products.id');
-    res.json(carts);
-  } catch (error) {
-    res.status(500).json({ message: error.message });
-  }
-});
-
-cartRouter.get('/:cid', async (req, res) => {
-  const cartId = req.params.cid;
-  try {
-    const cart = await cartModel.findById(cartId).populate('products');
-    res.render('carts', { cart });
-  } catch (err) {
-    res.status(500).json({ message: err.message });
-  }
-});
-
-
-
-// Add a product to a cart
-cartRouter.post('/:cid/products/:pid', async (req, res) => {
+cartRouter.post('/:cid/product/:pid', async (req, res) => {
   const { cid, pid } = req.params;
   const { quantity } = req.body;
 
   try {
     const cart = await cartModel.findById(cid);
+
     if (!cart) {
-      res.status(404).send('Cart not found');
-      return;
+      return res.status(404).json({ message: 'Cart not found' });
     }
 
     const product = await productModel.findById(pid);
+
     if (!product) {
-      res.status(404).send('Product not found');
-      return;
+      return res.status(404).json({ message: 'Product not found' });
     }
 
-    // Check if the product is already in the cart
-    const existingProduct = cart.products.find(
-      (p) => p.product.toString() === pid
+    const existingProductIndex = cart.products.findIndex(
+      (p) => String(p.product) === pid
     );
-    if (existingProduct) {
-      // If the product already exists in the cart, update its quantity
-      existingProduct.quantity += parseInt(quantity);
+
+    if (existingProductIndex !== -1) {
+      cart.products[existingProductIndex].quantity += quantity || 1;
     } else {
-      // If the product doesn't exist in the cart, add it with the given quantity
-      cart.products.push({ product: pid, quantity: parseInt(quantity) });
+      cart.products.push({ product: pid, quantity: quantity || 1 });
     }
 
-    // Save the updated cart to the database
-    const savedCart = await cart.save();
+    await cart.save();
 
-    // Return the updated cart
-    res.status(201).json(savedCart);
+    return res.status(200).json({ cart });
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 });
 
-// Update a cart with an array of products
+// DELETE /api/carts/:cid/products/:pid
+
+cartRouter.delete('/:cid/products/:pid', async (req, res) => {
+  const { cid, pid } = req.params;
+
+  try {
+    const cart = await cartModel.findById(cid);
+
+    if (!cart) {
+      return res.status(404).json({ message: 'Cart not found' });
+    }
+
+    const existingProductIndex = cart.products.findIndex(
+      (p) => String(p.product) === pid
+    );
+
+    if (existingProductIndex !== -1) {
+      cart.products.splice(existingProductIndex, 1);
+    } else {
+      return res.status(404).json({ message: 'Product not found in cart' });
+    }
+
+    await cart.save();
+
+    return res.status(200).json({ cart });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+});
+// PUT /api/carts/:cid
+
 cartRouter.put('/:cid', async (req, res) => {
   const { cid } = req.params;
   const { products } = req.body;
 
   try {
     const cart = await cartModel.findById(cid);
+
     if (!cart) {
-      res.status(404).send('Cart not found');
-      return;
+      return res.status(404).json({ message: 'Cart not found' });
     }
 
-    // Remove all products from the cart
-    cart.products = [];
+    cart.products = products;
+    await cart.save();
+    return res.status(200).json({ message: 'Cart updated successfully', cart });
 
-    // Add the new products to the cart
-    for (const product of products) {
-      const existingProduct = await productModel.findById(product.product);
-      if (!existingProduct) {
-        res.status(404).send(`Product with ID ${product.product} not found`);
-        return;
-      }
-      cart.products.push({ product: existingProduct._id, quantity: product.quantity });
-    }
-
-    // Save the updated cart to the database
-    const savedCart = await cart.save();
-
-    // Return the updated cart
-    res.status(200).json(savedCart);
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 });
 
-// Update the quantity of a product in a cart
+// PUT /api/carts/:cid/products/:pid
 cartRouter.put('/:cid/products/:pid', async (req, res) => {
   const { cid, pid } = req.params;
   const { quantity } = req.body;
@@ -122,45 +121,122 @@ cartRouter.put('/:cid/products/:pid', async (req, res) => {
   try {
     const cart = await cartModel.findById(cid);
     if (!cart) {
-      res.status(404).send('Cart not found');
-      return;
+      return res.status(404).json({ message: 'Cart not found' });
     }
-
     const product = cart.products.find(p => p.product.toString() === pid);
     if (!product) {
-      res.status(404).send('Product not found');
-      return;
+      return res.status(404).json({ message: 'Product not found in cart' });
     }
+    product.quantity = quantity;
 
-    product.quantity = parseInt(quantity);
-    const savedCart = await cart.save();
-    res.json(savedCart);
+    await cart.save();
+    return res.status(200).json({ message: 'Product quantity updated successfully', cart });
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
   }
 });
 
-
-// Delete all products from a cart
+// DELETE /api/carts/:cid
 cartRouter.delete('/:cid', async (req, res) => {
   const { cid } = req.params;
 
   try {
-    const updatedCart = await cartModel.findByIdAndUpdate(
-      cid,
-      { products: [] },
-      { new: true }
-    ).populate('products.product');
+    const cart = await cartModel.findById(cid);
 
-    if (!updatedCart) {
-      res.status(404).send('Cart not found');
-      return;
+    if (!cart) {
+      return res.status(404).json({ message: 'Cart not found' });
     }
 
-    res.json(updatedCart);
+    cart.products = [];
+
+    await cart.save();
+    return res.status(200).json({ message: 'All products deleted successfully from cart', cart });
+
   } catch (error) {
-    res.status(500).json({ message: error.message });
+    console.error(error);
+    return res.status(500).json({ message: 'Internal server error' });
+  }
+
+});
+
+// PUT /api/carts/:cid/products/:pid
+
+
+cartRouter.put('/:cid/products/:pid', async (req, res) => {
+  const { cid, pid } = req.params;
+  const { quantity } = req.body;
+
+  try {
+    const cart = await cartModel.findById(cid);
+    if (!cart) {
+      return res.status(404).json({ message: 'Cart not found' });
+    }
+
+    const productIndex = cart.products.findIndex(product => product._id == pid);
+
+    if (productIndex === -1) {
+      return res.status(404).json({ message: 'Product not found in cart' });
+    }
+
+    cart.products[productIndex].quantity = quantity;
+
+    await cart.save();
+
+    res.status(200).json(cart);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
   }
 });
 
-export default cartRouter
+// DELETE /api/carts/:cid
+cartRouter.delete('/:cid', async (req, res) => {
+  const { cid } = req.params;
+
+  try {
+    const cart = await cartModel.findById(cid);
+
+
+    if (!cart) {
+      return res.status(404).json({ message: 'Cart not found' });
+    }
+
+    cart.products = [];
+
+    await cart.save();
+
+    res.status(200).json(cart);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+// GET /api/carts/:cid
+cartRouter.get('/:cid', async (req, res) => {
+  const { cid } = req.params;
+
+  try {
+    const cart = await Cart.findById(cid).populate('products');
+
+    if (!cart) {
+      return res.status(404).json({ message: 'Cart not found' });
+    }
+
+    res.status(200).json(cart);
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
+
+
+
+export default cartRouter;
