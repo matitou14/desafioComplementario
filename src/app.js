@@ -6,21 +6,45 @@ import cartRouter from './routes/carts.routes.js'
 import handlebars from 'express-handlebars'
 import __dirname from './utils.js'
 import mongoose from 'mongoose'
-import productModel from './dao/models/products.models.js';
+import sessionRouter from './routes/session.routes.js'
+import session from 'express-session';
+import mongo from 'connect-mongo';
+import MongoStore from 'connect-mongo';
+import morgan from 'morgan';
+
+
 
 
 const app = express()
+const uri = "mongodb+srv://matitouthe14:Alejo.2510@cluster0.rexogvr.mongodb.net/ecommerce?retryWrites=true&w=majority"
 
-
-
+app.use(morgan('combined'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.engine('handlebars', handlebars.engine());
 app.set('views', `${__dirname}/views`);
 app.set('view engine', 'handlebars');
 app.use(express.static(__dirname + '/public'));
+
+app.use(session({
+  store: MongoStore.create({
+    mongoUrl: uri,
+    dbname: 'ecommerce'
+
+
+
+
+}),
+  secret:'c0d3r',
+  resave:true,
+  saveUninitialized:true
+  })),
+
+
+
 // app.use('/', routerViews);
 // app.use('/realtimeproducts', routerViews);
+app.use('/session', sessionRouter);
 app.use('/products', productRouter );
 app.use('/carts', cartRouter );
 app.use('/api/carts', cartRouter );
@@ -29,7 +53,7 @@ app.get('/', (req, res) => {
 
 let messages = []
 
-const uri = "mongodb+srv://matitouthe14:Alejo.2510@cluster0.rexogvr.mongodb.net/ecommerce?retryWrites=true&w=majority"
+
 mongoose.set('strictQuery', false)
 mongoose.connect(uri)
   .then(() => {
