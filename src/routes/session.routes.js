@@ -37,7 +37,12 @@ router.post('/login', async (req,res) =>{
         error: 'Usuario o contraseña incorrectos'
       })
     }
+    if (user.email === 'adminCoder@coder.com' && user.password === 'adminCod3r123' )
+    { user.role =  'admin'}
+
+
     req.session.user = user
+
     res.redirect('/products')
   })
 
@@ -54,5 +59,8 @@ router.get ('/logout', (req, res) => {
     })
     
 });
+
+
+
 
 export default router;
