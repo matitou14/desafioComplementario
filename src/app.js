@@ -6,10 +6,9 @@ import cartRouter from './routes/carts.routes.js'
 import handlebars from 'express-handlebars'
 import __dirname from './utils.js'
 import mongoose from 'mongoose'
-import sessionRouter from './routes/session.routes.js'
 import session from 'express-session';
-import mongo from 'connect-mongo';
 import MongoStore from 'connect-mongo';
+import sessionRouter from './routes/session.routes.js'
 import morgan from 'morgan';
 
 
@@ -17,6 +16,18 @@ import morgan from 'morgan';
 
 const app = express()
 const uri = "mongodb+srv://matitouthe14:Alejo.2510@cluster0.rexogvr.mongodb.net/ecommerce?retryWrites=true&w=majority"
+
+app.use(session({
+  store: MongoStore.create({
+    mongoUrl: uri,
+    mongoOptions: {useNewUrlParser: true, useUnifiedTopology: true},
+    ttl:110
+  }),
+  secret:'c0d3r',
+  resave:true,
+  saveUninitialized:true
+}));
+
 
 app.use(morgan('combined'));
 app.use(express.json());
@@ -26,19 +37,7 @@ app.set('views', `${__dirname}/views`);
 app.set('view engine', 'handlebars');
 app.use(express.static(__dirname + '/public'));
 
-app.use(session({
-  store: MongoStore.create({
-    mongoUrl: uri,
-    dbname: 'ecommerce'
 
-
-
-
-}),
-  secret:'c0d3r',
-  resave:true,
-  saveUninitialized:true
-  })),
 
 
 
@@ -52,6 +51,7 @@ app.get('/', (req, res) => {
     res.send('Bienvenidos a Don Pedro Carnes!')});
 
 let messages = []
+
 
 
 mongoose.set('strictQuery', false)
