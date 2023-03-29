@@ -1,66 +1,25 @@
 import {Router} from 'express'
-import UserModel from '../dao/models/user.models.js'
+import {createRegister, createUser, seeLogin ,loginUser, logoutUser} from '../controllers/userControllers.js'
 
 const router = Router()
 
 //Vista para registrar users
 
-router.get('/register', (req, res) => {
-    res.render('sessions/register')
-})
+router.get('/register', createRegister)
 
 // API para crear usuarios
 
-router.post('/register', async (req, res) => {
-    const userNew = req.body
-    const user = new UserModel(userNew)
-    await user.save()
-
-    res.redirect('/session/login')
-
-})
-
+router.post('/register',createUser)
 // Vista de login
 
-router.get('/login', (req, res) => {
-    res.render('sessions/login')
-});
+router.get('/login', seeLogin)
 
 // API para loguear usuarios
 
-
-router.post('/login', async (req,res) =>{
-    const { email, password} = req.body
-    const user = await UserModel.findOne({email, password}).lean().exec()
-    if (!user) {
-      return res.status(401).render('errors/db', {
-        error: 'Usuario o contraseña incorrectos'
-      })
-    }
-    if (user.email === 'adminCoder@coder.com' && user.password === 'adminCod3r123' )
-    { user.role =  'admin'}
-
-
-    req.session.user = user
-
-    res.redirect('/products')
-  })
+router.post('/login', loginUser)
 
 // Cerrar sesion
 
-router.get ('/logout', (req, res) => {
-    req.session.destroy(err =>{
-        if (err) {
-            return res.status(500).render('errors/db', {
-                error: 'Error al cerrar sesion'
-            })
-        }
-        res.redirect('/session/login')
-    })
-    
-});
-
-
-
+router.get('/logout', logoutUser)
 
 export default router;

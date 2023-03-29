@@ -2,7 +2,7 @@ import express from 'express'
 import { Server} from 'socket.io';
 import productRouter from './routes/products.routes.js'
 import cartRouter from './routes/carts.routes.js'
-// import routerViews from './routes/views.routes.js'
+import routerViews from './routes/views.routes.js'
 import handlebars from 'express-handlebars'
 import __dirname from './utils.js'
 import mongoose from 'mongoose'
@@ -41,7 +41,7 @@ app.use(express.static(__dirname + '/public'));
 
 
 
-// app.use('/', routerViews);
+app.use('/', routerViews);
 // app.use('/realtimeproducts', routerViews);
 app.use('/session', sessionRouter);
 app.use('/products', productRouter );

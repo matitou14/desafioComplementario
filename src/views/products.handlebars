@@ -3,11 +3,11 @@
   
   <h1>Bienvenido {{user.user}}</h1>
 
-  <a href="/session/logout">Cerrar Sesión</a>
+  <a href='session/logout'>Cerrar Sesión</a>
   
   {{#each products}}
   <h2>{{this.title}}</h2>
-  <p>{{this.description}}</p>
+  <p>{{this.description}}</p> 
   <p>{{this.price}}</p>
   <img src={{this.thumbnail}} alt={{this.title}}>
   <a href="/products/{{this._id}}">Ver detalles</a>
