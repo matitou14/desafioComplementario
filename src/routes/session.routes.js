@@ -20,6 +20,6 @@ router.post('/login', loginUser)
 
 // Cerrar sesion
 
-router.get('/logout', logoutUser)
+router.post('/logout', logoutUser)
 
 export default router;
