@@ -1,6 +1,7 @@
 
 import UserModel from '../dao/models/user.models.js'
-
+import {createHash} from '../utils.js/'
+import { IsValidPassword } from '../utils.js'
 
 
 // Register
@@ -9,7 +10,13 @@ export const createRegister = (req, res) => {
   };
   
   export const createUser = async (req, res) => {
-    const userNew = req.body;
+    const userNew ={
+      first_name: req.body.first_name,
+      last_name: req.body.last_name,
+      age: req.body.age,
+      email: req.body.email,
+      password: createHash(req.body.password)
+    }
     const user = new UserModel(userNew);
     await user.save();
 
@@ -23,21 +30,23 @@ export const createRegister = (req, res) => {
   
   export const loginUser = async (req, res) => {
     const { email, password } = req.body;
-    const user = await UserModel.findOne({ email, password }).lean().exec();
+    const user = await UserModel.findOne({ email}).lean().exec();
     
-    if (!user) {
+  if (!user) {
       return res.status(401).render('errors/db', {
-        error: 'Usuario o contraseña incorrectos'
-      });
-    }
-    
-    if (user.email === 'adminCoder@coder.com' && user.password === 'adminCod3r123' ) {
+        error: 'Usuario no encontrado'
+    });
+  }
+  if (!IsValidPassword (user, password))  
+    return res.status(403).send({ status:"error", error:"Contraseña incorrecta"})
+  
+  if (user.email === 'adminCoder@coder.com' && user.password === 'adminCod3r123' ) {
       user.role = 'admin';
     }
   
     req.session.user = user;
   
-    res.redirect('/products');
+    res.redirect('/products',);
   };
 
   // Logout
