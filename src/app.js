@@ -10,13 +10,14 @@ import session from 'express-session';
 import MongoStore from 'connect-mongo';
 import sessionRouter from './routes/session.routes.js'
 import morgan from 'morgan';
-
-
+import intializePassport from './config/passport.config.js'
+import passport from 'passport';
 
 
 const app = express()
 const uri = "mongodb+srv://matitouthe14:Alejo.2510@cluster0.rexogvr.mongodb.net/ecommerce?retryWrites=true&w=majority"
 
+intializePassport ();
 app.use(session({
   store: MongoStore.create({
     mongoUrl: uri,
@@ -27,7 +28,8 @@ app.use(session({
   resave:true,
   saveUninitialized:true
 }));
-
+app.use(passport.initialize());
+app.use(passport.session())
 
 app.use(morgan('combined'));
 app.use(express.json());
@@ -43,7 +45,7 @@ app.use(express.static(__dirname + '/public'));
 
 app.use('/', sessionRouter );
 // app.use('/realtimeproducts', routerViews);
-app.use('/session', sessionRouter);
+app.use('/api/sessions', sessionRouter);
 app.use('/products', productRouter );
 app.use('/carts', cartRouter );
 app.use('/api/carts', cartRouter );

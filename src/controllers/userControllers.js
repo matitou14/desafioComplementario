@@ -2,6 +2,7 @@
 import UserModel from '../dao/models/user.models.js'
 import {createHash} from '../utils.js/'
 import { IsValidPassword } from '../utils.js'
+import passport from 'passport';
 
 
 // Register
@@ -39,15 +40,23 @@ export const createRegister = (req, res) => {
   }
   if (!IsValidPassword (user, password))  
     return res.status(403).send({ status:"error", error:"Contraseña incorrecta"})
-  
-  if (user.email === 'adminCoder@coder.com' && user.password === 'adminCod3r123' ) {
-      user.role = 'admin';
-    }
-  
-    req.session.user = user;
+
+      req.session.user = user;
   
     res.redirect('/products',);
   };
+
+  // login github
+
+  export const loginGithub = passport.authenticate('github', {scope: ['user:email']}, (req, res) => {})
+
+  export const loginGithubCallback = passport.authenticate('github', {failureRedirect: '/login'}, async (req, res) => {
+    console.log('Callback', user.req);
+    req.session.user = req.user;
+    console.log('User Session; ', req.session.user)
+    res.redirect('/');
+
+  })
 
   // Logout
   export const logoutUser = (req, res) => {
