@@ -1,9 +1,9 @@
 import passport from 'passport'
 import userModel from '../dao/models/user.models.js'
-import GithubStrategy from 'passport-github2'
+import GitHubStrategy from 'passport-github2';
 
 const intializePassport = () =>{
-passport.use ('github', new GithubStrategy({
+passport.use ('github', new GitHubStrategy({
     clientID: ' Iv1.4f2c951299e269bc',
     clientSecret: 'f68339fba2981dc813df6ccc818e8f29db57fe76',
     callbackURL:'http://localhost:8080/api/sessions/githubcallback',

@@ -4,7 +4,6 @@ import {createHash} from '../utils.js/'
 import { IsValidPassword } from '../utils.js'
 import passport from 'passport';
 
-
 // Register
 export const createRegister = (req, res) => {
     res.render('sessions/register');
@@ -48,15 +47,14 @@ export const createRegister = (req, res) => {
 
   // login github
 
-  export const loginGithub = passport.authenticate('github', {scope: ['user:email']}, (req, res) => {})
+  export const loginGithub = passport.authenticate('github', {scope: ['user:email']});
 
-  export const loginGithubCallback = passport.authenticate('github', {failureRedirect: '/login'}, async (req, res) => {
-    console.log('Callback', user.req);
+  export const loginGithubCallback = passport.authenticate('github', { failureRedirect: '/session/login' },
+  (req, res) => {
     req.session.user = req.user;
-    console.log('User Session; ', req.session.user)
     res.redirect('/');
-
-  })
+  }
+);
 
   // Logout
   export const logoutUser = (req, res) => {

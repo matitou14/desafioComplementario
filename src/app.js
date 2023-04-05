@@ -43,15 +43,16 @@ app.use(express.static(__dirname + '/public'));
 
 
 
-app.use('/', sessionRouter );
 // app.use('/realtimeproducts', routerViews);
+app.use('/', sessionRouter);
 app.use('/api/sessions', sessionRouter);
 app.use('/products', productRouter );
 app.use('/carts', cartRouter );
 app.use('/api/carts', cartRouter );
 app.get('/', (req, res) => {
-    res.redirect('/login')
-   });
+  res.redirect('/session/login')
+});
+
 
 let messages = []
 

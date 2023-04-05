@@ -9,14 +9,14 @@ router.get('/register', createRegister)
 
 // API para crear usuarios
 
-router.post('/register',createUser)
+router.post('/session/register',createUser)
 // Vista de login
 
-router.get('/login', seeLogin)
+router.get('/session/login', seeLogin)
 
 // API para loguear usuarios
 
-router.post('/login', loginUser)
+router.post('/session/login', loginUser)
 
 // Vista logueo con github
 
@@ -24,10 +24,10 @@ router.get('/github', loginGithub)
 
 // API logueo github
 
-router.get('/github/callback', loginGithubCallback)
+router.get('/githubcallback', loginGithubCallback)
 
 // Cerrar sesion
 
-router.post('/logout', logoutUser)
+router.post('/session/logout', logoutUser)
 
 export default router;
