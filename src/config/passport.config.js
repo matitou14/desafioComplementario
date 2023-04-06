@@ -4,9 +4,9 @@ import GitHubStrategy from 'passport-github2';
 
 const intializePassport = () =>{
 passport.use ('github', new GitHubStrategy({
-    clientID: ' Iv1.4f2c951299e269bc',
+    clientID: 'Iv1.4f2c951299e269bc',
     clientSecret: 'f68339fba2981dc813df6ccc818e8f29db57fe76',
-    callbackURL:'http://localhost:8080/api/sessions/githubcallback',
+    callbackURL:'http://localhost:8080/api/session/githubcallback',
 
 
 }, async (accessToken, refreshToken, profile, done) => {

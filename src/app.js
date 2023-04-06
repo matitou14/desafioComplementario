@@ -17,7 +17,6 @@ import passport from 'passport';
 const app = express()
 const uri = "mongodb+srv://matitouthe14:Alejo.2510@cluster0.rexogvr.mongodb.net/ecommerce?retryWrites=true&w=majority"
 
-intializePassport ();
 app.use(session({
   store: MongoStore.create({
     mongoUrl: uri,
@@ -26,8 +25,10 @@ app.use(session({
   }),
   secret:'c0d3r',
   resave:true,
-  saveUninitialized:true
+  saveUninitialized:true,
 }));
+
+intializePassport ();
 app.use(passport.initialize());
 app.use(passport.session())
 
@@ -45,7 +46,6 @@ app.use(express.static(__dirname + '/public'));
 
 // app.use('/realtimeproducts', routerViews);
 app.use('/', sessionRouter);
-app.use('/api/sessions', sessionRouter);
 app.use('/products', productRouter );
 app.use('/carts', cartRouter );
 app.use('/api/carts', cartRouter );

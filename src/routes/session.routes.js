@@ -20,11 +20,11 @@ router.post('/session/login', loginUser)
 
 // Vista logueo con github
 
-router.get('/github', loginGithub)
+router.get('/api/session/github', loginGithub)
 
 // API logueo github
 
-router.get('/githubcallback', loginGithubCallback)
+router.get('/api/session/githubcallback', loginGithubCallback)
 
 // Cerrar sesion
 
