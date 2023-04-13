@@ -1,8 +1,10 @@
 
 import UserModel from '../dao/models/user.models.js'
-import {createHash} from '../utils.js/'
+import {createHash} from '../utils.js'
 import { IsValidPassword } from '../utils.js'
 import passport from 'passport';
+import { JWT_COOKIE_NAME } from '../config/credentials.js';
+
 
 // Register
 export const createRegister = (req, res) => {
@@ -28,21 +30,24 @@ export const createRegister = (req, res) => {
     res.render('sessions/login');
   };
   
-  export const loginUser = async (req, res) => {
-    const { email, password } = req.body;
-    const user = await UserModel.findOne({ email}).lean().exec();
-    
-  if (!user) {
-      return res.status(401).render('errors/db', {
-        error: 'Usuario no encontrado'
-    });
-  }
-  if (!IsValidPassword (user, password))  
-    return res.status(403).send({ status:"error", error:"Contraseña incorrecta"})
 
-      req.session.user = user;
-  
-    res.redirect('/products',);
+  export const loginUser = (req, res, next) => {
+    passport.authenticate('local', (err, user, info) => {
+      if (err) {
+        return next(err);
+      }
+      if (!user) {
+        return res.status(401).render('errors/db', {
+          error: 'Usuario no encontrado'
+        });
+      }
+      req.logIn(user, (err) => {
+        if (err) {
+          return next(err);
+        }
+        res.cookie(JWT_COOKIE_NAME, req.user.token).redirect('/products');
+      });
+    })(req, res, next);
   };
 
   // login github
@@ -54,6 +59,7 @@ export const createRegister = (req, res) => {
   }, (req, res) => {
     if (req.session) {
       req.session.user = req.user;
+      console.log(req.session.user);
     }
     if (res) {
       res.redirect('/');

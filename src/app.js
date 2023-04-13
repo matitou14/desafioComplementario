@@ -50,7 +50,7 @@ app.use('/products', productRouter );
 app.use('/carts', cartRouter );
 app.use('/api/carts', cartRouter );
 app.get('/', (req, res) => {
-  res.redirect('/session/login')
+  res.render('index')
 });
 
 
