@@ -1,24 +1,39 @@
 <div>
   <h1>Nuestros productos</h1>
-  
-  <h1>Bienvenido {{user}}</h1>
 
   <form action="/session/logout" method="POST">
   <button type="submit">Cerrar Sesión</button>
 </form>
 
-  
-  {{#each products}}
-  <h2>{{this.title}}</h2>
-  <p>{{this.description}}</p> 
-  <p>{{this.price}}</p>
-  <img src={{this.thumbnail}} alt={{this.title}}>
-  <a href="/products/{{this._id}}">Ver detalles</a>
-  <form method="POST" action="/carts">
-    <input type="hidden" name="productId" value="{{this._id}}">
-    <button type="submit">Agregar al carrito</button>
-  </form>
-  {{/each}}
+<table>
+  <thead>
+    <tr>
+      <th>Nombre</th>
+      <th>Descripción</th>
+      <th>Precio</th>
+      <th>Imagen</th>
+      <th>Acciones</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each products}}
+    <tr>
+      <td>{{this.title}}</td>
+      <td>{{this.description}}</td>
+      <td>{{this.price}}</td>
+      <td><img src={{this.thumbnail}} alt={{this.title}}></td>
+      <td>
+        <a href="/products/{{this._id}}">Ver detalles</a>
+        <form method="POST" action="/carts">
+          <input type="hidden" name="productId" value="{{this._id}}">
+          <button type="submit">Agregar al carrito</button>
+        </form>
+      </td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
+
 
   <div>
     {{#if hasPrevPage}}

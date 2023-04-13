@@ -49,13 +49,16 @@ export const createRegister = (req, res) => {
 
   export const loginGithub = passport.authenticate('github', {scope: ['user:email']});
 
-  export const loginGithubCallback = passport.authenticate('github', { failureRedirect: '/session/login' },
-  (req, res) => {
-    req.session.user = req.user;
-    res.redirect('/');
-  }
-);
-
+  export const loginGithubCallback = passport.authenticate('github', { 
+    failureRedirect: '/session/login' 
+  }, (req, res) => {
+    if (req.session) {
+      req.session.user = req.user;
+    }
+    if (res) {
+      res.redirect('/');
+    }
+  });
   // Logout
   export const logoutUser = (req, res) => {
     req.session.destroy(err => {
