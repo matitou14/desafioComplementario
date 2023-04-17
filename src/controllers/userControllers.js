@@ -5,6 +5,7 @@ import { IsValidPassword } from '../utils.js'
 import passport from 'passport';
 import { JWT_COOKIE_NAME } from '../config/credentials.js';
 
+const LOCAL_STRATEGY_NAME = 'local';
 
 // Register
 export const createRegister = (req, res) => {
@@ -32,7 +33,7 @@ export const createRegister = (req, res) => {
   
 
   export const loginUser = (req, res, next) => {
-    passport.authenticate('local', (err, user, info) => {
+    passport.authenticate(LOCAL_STRATEGY_NAME, (err, user, info) => {
       if (err) {
         return next(err);
       }

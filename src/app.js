@@ -12,6 +12,7 @@ import sessionRouter from './routes/session.routes.js'
 import morgan from 'morgan';
 import intializePassport from './config/passport.config.js'
 import passport from 'passport';
+  
 
 
 const app = express()
@@ -39,6 +40,7 @@ app.engine('handlebars', handlebars.engine());
 app.set('views', `${__dirname}/views`);
 app.set('view engine', 'handlebars');
 app.use(express.static(__dirname + '/public'));
+
 
 
 

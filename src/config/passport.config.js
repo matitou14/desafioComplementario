@@ -1,13 +1,12 @@
 import passport from 'passport'
+import LocalStrategy from 'passport-local'
 import passport_jwt from 'passport-jwt'
-import local from 'passport-local'
 import UserModel from '../dao/models/user.models.js'
 import GitHubStrategy from 'passport-github2';
 import { createHash, IsValidPassword, createToken, extractCookie } from '../utils.js';
 import { JWT_PRIVATE_KEY } from '../config/credentials.js';
 
 
-const LocalStrategy = local.Strategy
 const JWTStrategy = passport_jwt.Strategy
 const ExtractJWT = passport_jwt.ExtractJwt
 
@@ -43,6 +42,7 @@ const intializePassport = () => {
             done(error, null);
         }
     }));
+ 
     passport.use('register', new LocalStrategy({
         passReqToCallback: true,
         usernameField: 'email'
@@ -63,7 +63,7 @@ const intializePassport = () => {
                 age,
                 password: createHash(password)
             }
-            const result = await userModel.create(newUser)
+            const result = await UserModel.create(newUser)
             
             return done(null, result)
         } catch (error) {
@@ -73,7 +73,7 @@ const intializePassport = () => {
 
     }))
 
-passport.use('login', new LocalStrategy({
+    passport.use('local', new LocalStrategy({
         usernameField: 'email',
     }, async (username, password, done) => {
         try {
@@ -93,7 +93,7 @@ passport.use('login', new LocalStrategy({
             
         }
     }))
-
+ 
 
 }
     passport.use('jwt', new JWTStrategy({
@@ -101,18 +101,19 @@ passport.use('login', new LocalStrategy({
         secretOrKey: JWT_PRIVATE_KEY,
     }, async (jwt_payload, done) => {
         done(null, jwt_payload)
-    }))
+  }))
 
-    passport.serializeUser((user, done) => {
+   
+  passport.serializeUser((user, done) => {
 
-        done(null, user._id)
-    })
+    done(null, user._id)
+})
 
-    passport.deserializeUser(async (id, done) => {
+  passport.deserializeUser(async (id, done) => {
 
-        const user = await UserModel.findById(id)
-        done(null, user)
-    })
+    const user = await UserModel.findById(id)
+    done(null, user)
+})
 
 
 
