@@ -4,7 +4,7 @@ import productRouter from './routes/products.routes.js'
 import cartRouter from './routes/carts.routes.js'
 // import routerViews from './routes/views.routes.js'
 import handlebars from 'express-handlebars'
-import __dirname from './utils.js'
+import __dirname, { passportCall } from './utils.js'
 import mongoose from 'mongoose'
 import session from 'express-session';
 import MongoStore from 'connect-mongo';
@@ -12,6 +12,7 @@ import sessionRouter from './routes/session.routes.js'
 import morgan from 'morgan';
 import intializePassport from './config/passport.config.js'
 import passport from 'passport';
+import cookieParser from 'cookie-parser';
   
 
 
@@ -19,11 +20,6 @@ const app = express()
 const uri = "mongodb+srv://matitouthe14:Alejo.2510@cluster0.rexogvr.mongodb.net/ecommerce?retryWrites=true&w=majority"
 
 app.use(session({
-  store: MongoStore.create({
-    mongoUrl: uri,
-    mongoOptions: {useNewUrlParser: true, useUnifiedTopology: true},
-    ttl:110
-  }),
   secret:'c0d3r',
   resave:true,
   saveUninitialized:true,
@@ -36,6 +32,7 @@ app.use(passport.session())
 app.use(morgan('combined'));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(cookieParser());
 app.engine('handlebars', handlebars.engine());
 app.set('views', `${__dirname}/views`);
 app.set('view engine', 'handlebars');
@@ -48,7 +45,7 @@ app.use(express.static(__dirname + '/public'));
 
 // app.use('/realtimeproducts', routerViews);
 app.use('/', sessionRouter);
-app.use('/products', productRouter );
+app.use('/products',passportCall ('jwt'), productRouter );
 app.use('/carts', cartRouter );
 app.use('/api/carts', cartRouter );
 app.get('/', (req, res) => {

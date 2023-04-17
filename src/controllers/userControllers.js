@@ -68,14 +68,9 @@ export const createRegister = (req, res) => {
   });
   // Logout
   export const logoutUser = (req, res) => {
-    req.session.destroy(err => {
-      if (err) {
-        return res.status(500).render('errors/db', {
-          error: 'Error al cerrar sesion'
-        })
-      }
-      res.redirect('/session/login')
-    })
+  
+      res.clearCookie(JWT_COOKIE_NAME).redirect('/session/login')
+   
   }
   
 

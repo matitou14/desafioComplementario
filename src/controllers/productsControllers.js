@@ -15,7 +15,8 @@ export const getAllProducts = async (req, res) => {
     const result = await productModel.paginate({}, options);
     const prevLink = result.hasPrevPage ? `/products?page=${result.prevPage}` : '';
     const nextLink = result.hasNextPage ? `/products?page=${result.nextPage}` : '';
-    res.render('products', { 
+    const user = req.user;
+    const data = {
       products: result.docs, 
       totalPages: result.totalPages,
       prevPage: result.prevPage,
@@ -24,13 +25,16 @@ export const getAllProducts = async (req, res) => {
       hasPrevPage: result.hasPrevPage,
       hasNextPage: result.hasNextPage,
       prevLink,
-      nextLink
-    });
+      nextLink,
+      user: req.user.user
+    };
+    res.render('products', data);
   } catch (error) {
     console.log(error);
     res.status(500).send('Internal Server Error');
   }
 };
+
 
 export const getProductById = async (req, res) => {
   try {
