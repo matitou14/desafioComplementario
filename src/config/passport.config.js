@@ -101,6 +101,21 @@ const intializePassport = () => {
         secretOrKey: JWT_PRIVATE_KEY,
     }, async (jwt_payload, done) => {
         done(null, jwt_payload)
+
+    passport.use('current', new JWTStrategy({
+            jwtFromRequest: ExtractJWT.fromExtractors([extractCookie]),
+            secretOrKey: JWT_PRIVATE_KEY,
+          }, async (jwt_payload, done) => {
+            try {
+              const user = await UserModel.findById(jwt_payload.sub);
+              if (!user) {
+                return done(null, false, { message: 'Usuario no encontrado.' });
+              }
+              return done(null, user);
+            } catch (error) {
+              return done(error);
+            }
+          }));    
   }))
 
    

@@ -1,5 +1,5 @@
 import {Router} from 'express'
-import {createRegister, createUser, seeLogin ,loginUser, logoutUser, loginGithub, loginGithubCallback} from '../controllers/userControllers.js'
+import {createRegister, createUser, seeLogin ,loginUser, logoutUser, loginGithub, loginGithubCallback, currentSession} from '../controllers/userControllers.js'
 
 const router = Router()
 
@@ -25,6 +25,10 @@ router.get('/api/session/github', loginGithub)
 // API logueo github
 
 router.get('/api/session/githubcallback', loginGithubCallback)
+
+// Current
+
+router.get('/current', currentSession)
 
 // Cerrar sesion
 

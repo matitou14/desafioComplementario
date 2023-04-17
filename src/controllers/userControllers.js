@@ -4,6 +4,7 @@ import {createHash} from '../utils.js'
 import { IsValidPassword } from '../utils.js'
 import passport from 'passport';
 import { JWT_COOKIE_NAME } from '../config/credentials.js';
+import router from './cartControllers.js';
 
 const LOCAL_STRATEGY_NAME = 'local';
 
@@ -66,6 +67,22 @@ export const createRegister = (req, res) => {
       res.redirect('/');
     }
   });
+
+  // Current
+
+  export const currentSession = (req, res) => {
+    const { first_name, last_name, email } = req.user;
+    const user = {
+      first_name,
+      last_name,
+      email,
+    };
+    res.json({ user });
+  };
+  
+  
+
+
   // Logout
   export const logoutUser = (req, res) => {
   
