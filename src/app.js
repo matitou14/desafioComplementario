@@ -13,6 +13,8 @@ import morgan from 'morgan';
 import intializePassport from './config/passport.config.js'
 import passport from 'passport';
 import cookieParser from 'cookie-parser';
+import config from './config/config.js'
+import dotenv from 'dotenv'
   
 
 
@@ -49,7 +51,7 @@ app.use('/products',passportCall ('jwt'), productRouter );
 app.use('/carts', cartRouter );
 app.use('/api/carts', cartRouter );
 app.get('/', (req, res) => {
-  res.render('index')
+  res.send({config})
 });
 
 

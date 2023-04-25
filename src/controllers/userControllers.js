@@ -4,7 +4,8 @@ import {createHash} from '../utils.js'
 import { IsValidPassword } from '../utils.js'
 import passport from 'passport';
 import { JWT_COOKIE_NAME } from '../config/credentials.js';
-import router from './cartControllers.js';
+import { createUser, } from '../services/users.service.js'
+
 
 const LOCAL_STRATEGY_NAME = 'local';
 
@@ -13,21 +14,18 @@ export const createRegister = (req, res) => {
     res.render('sessions/register');
   };
   
-  export const createUser = async (req, res) => {
-    const userNew ={
-      first_name: req.body.first_name,
-      last_name: req.body.last_name,
-      age: req.body.age,
-      email: req.body.email,
-      password: createHash(req.body.password)
-    }
-    const user = new UserModel(userNew);
-    await user.save();
+  export const createUserController = async (req, res) => {
+    const user = await createUser(req.body);
+    res.json({ user });
+  };
+  
 
+    
+    
     // Login
   
-    res.redirect('/session/login');
-  };
+  // res.redirect('/session/login');
+  
   export const seeLogin = (req, res) => {
     res.render('sessions/login');
   };
