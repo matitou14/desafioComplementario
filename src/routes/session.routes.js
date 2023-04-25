@@ -9,7 +9,8 @@ router.get('/register', createRegister)
 
 // API para crear usuarios
 
-// router.post('/session/register',createUser)
+router.post('/session/register',createUserController)
+
 // Vista de login
 
 router.get('/session/login', seeLogin)

@@ -1,7 +1,10 @@
-import { query, Router } from "express";
+import { Router } from "express";
 import path from 'path';
 import __dirname from "../utils.js";
-import { getAllProducts, getProductById, getProductByPid, createProduct, updateProduct, deleteProduct } from '../controllers/productsControllers.js'
+import { 
+    getAllProductsController,  getProductByIdController, getProductByPidController, 
+createProductController,  updateProductController, deleteProductController } from "../controllers/productsControllers.js";
+
 
 
 
@@ -12,12 +15,12 @@ const products = []
 const prodfile = path.join(__dirname, 'data', 'products.json');
 
 
-router.get('/', getAllProducts);
-router.get('/:id', getProductById);
-router.get('/pid/:pid', getProductByPid);
-router.post('/', createProduct);
-router.put('/:pid', updateProduct);
-router.delete('/:pid', deleteProduct);
+router.get('/', getAllProductsController);
+router.get('/:id', getProductByIdController,);
+router.get('/pid/:pid', getProductByPidController);
+router.post('/', createProductController);
+router.put('/:pid', updateProductController);
+router.delete('/:pid', deleteProductController);
 
 
 export default router;
