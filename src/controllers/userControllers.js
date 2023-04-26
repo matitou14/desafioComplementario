@@ -1,15 +1,14 @@
 
-import UserModel from '../dao/models/user.models.js'
-import {createHash} from '../utils.js'
-import { IsValidPassword } from '../utils.js'
 import passport from 'passport';
 import { JWT_COOKIE_NAME } from '../config/credentials.js';
 import { createUser, } from '../services/users.service.js'
+import { success } from '../responses/user.response.js';
 
-
+const users = []
 const LOCAL_STRATEGY_NAME = 'local';
 
 // Register
+
 export const createRegister = (req, res) => {
     res.render('sessions/register');
   };

@@ -33,6 +33,14 @@ export const passportCall = (Strategy) => {
     }
 }
 
+export const superadminAuth = (req, res, next) => {
+    if (req.user && req.user.is_superadmin) {
+      next();
+    } else {
+      res.status(401).render('errors/db', { error: 'No tienes acceso a esta página' });
+    }
+  };
+
 export default __dirname;
 
 
