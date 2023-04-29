@@ -18,6 +18,7 @@ const userSchema = new mongoose.Schema({
     }
 });
 
+
 mongoose.set('strictQuery', false)
 const UserModel = mongoose.model(userCollection, userSchema);
 

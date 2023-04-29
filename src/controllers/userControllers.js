@@ -23,10 +23,10 @@ export const createRegister = (req, res) => {
     
     // Login
   
-  // res.redirect('/session/login');
   
   export const seeLogin = (req, res) => {
     res.render('sessions/login');
+
   };
   
 
@@ -61,7 +61,8 @@ export const createRegister = (req, res) => {
       console.log(req.session.user);
     }
     if (res) {
-      res.redirect('/');
+      res.redirect('/products');
+      
     }
   });
 
