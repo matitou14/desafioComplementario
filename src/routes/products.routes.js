@@ -4,6 +4,7 @@ import __dirname from "../utils.js";
 import { 
     getAllProductsController,  getProductByIdController, getProductByPidController, 
 createProductController,  updateProductController, deleteProductController } from "../controllers/productsControllers.js";
+import { isAdmin } from "../utils.js";
 
 
 
@@ -18,9 +19,9 @@ const prodfile = path.join(__dirname, 'data', 'products.json');
 router.get('/', getAllProductsController);
 router.get('/:id', getProductByIdController,);
 router.get('/pid/:pid', getProductByPidController);
-router.post('/', createProductController);
-router.put('/:pid', updateProductController);
-router.delete('/:pid', deleteProductController);
+router.post('/', isAdmin, createProductController);
+router.put('/:pid', isAdmin, updateProductController);
+router.delete('/:pid', isAdmin, deleteProductController);
 
 
 export default router;

@@ -3,6 +3,8 @@ import passport from 'passport';
 import { JWT_COOKIE_NAME } from '../config/credentials.js';
 import { createUser, } from '../services/users.service.js'
 import { success } from '../responses/user.response.js';
+import UserDtoDb from '../dao/models/UserDtodb.js';
+import { getCurrentUser } from '../services/users.service.js';
 
 const users = []
 const LOCAL_STRATEGY_NAME = 'local';
@@ -68,16 +70,15 @@ export const createRegister = (req, res) => {
 
   // Current
 
-  export const currentSession = (req, res) => {
-    const { first_name, last_name, email } = req.user;
-    const user = {
-      first_name,
-      last_name,
-      email,
-    };
-    res.json({ user });
+  export const currentSession = async (req, res) => {
+    try {
+      const user = await getCurrentUser(req);
+      const userDTO = new UserDtoDb(user);
+      res.json(userDTO);
+    } catch (error) {
+      res.status(500).json({message: error.message});
+    }
   };
-  
   
 
 

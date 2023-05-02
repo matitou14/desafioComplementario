@@ -7,6 +7,6 @@ class UserDtoDb {
         this.role = role;
     }
 
-
-
 }
+
+export default UserDtoDb;

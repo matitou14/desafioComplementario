@@ -41,6 +41,20 @@ export const superadminAuth = (req, res, next) => {
     }
   };
 
+  export const isAdmin = (req, res, next) => {
+    if (req.user && req.user.role === 'admin') {
+      return next();
+    }
+    res.status(401).json({message: 'No autorizado'});
+  };
+  
+  export const isUser = (req, res, next) => {
+    if (req.user) {
+      return next();
+    }
+    res.status(401).json({message: 'No autorizado'});
+  };
+
 export default __dirname;
 
 
