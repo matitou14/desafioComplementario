@@ -2,19 +2,17 @@ import express from 'express'
 import { Server} from 'socket.io';
 import productRouter from './routes/products.routes.js'
 import cartRouter from './routes/carts.routes.js'
-// import routerViews from './routes/views.routes.js'
+import routerViews from './routes/views.routes.js'
 import handlebars from 'express-handlebars'
-import __dirname, { passportCall } from './utils.js'
+import __dirname, { isUser, passportCall } from './utils.js'
 import mongoose from 'mongoose'
 import session from 'express-session';
-import MongoStore from 'connect-mongo';
 import sessionRouter from './routes/session.routes.js'
 import morgan from 'morgan';
 import intializePassport from './config/passport.config.js'
 import passport from 'passport';
 import cookieParser from 'cookie-parser';
-import config from './config/config.js'
-import dotenv from 'dotenv'
+
   
 
 
@@ -45,11 +43,10 @@ app.use(express.static(__dirname + '/public'));
 
 
 
-// app.use('/realtimeproducts', routerViews);
+app.use('/realtimeproducts', routerViews);
 app.use('/', sessionRouter);
 app.use('/products',passportCall ('jwt'), productRouter );
 app.use('/carts', cartRouter );
-app.use('/api/carts', cartRouter );
 app.get('/', (req, res) => {
   res.render('index')
 });
