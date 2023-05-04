@@ -1,11 +1,12 @@
 import { Router } from "express";
-import { addProductToCart, getCartById, deleteProductFromCart, updateCart, updateProductQuantity, deleteAllProductsFromCart } from '../controllers/cartControllers.js';
+import { addCart, addProductToCart, getCartById, deleteProductFromCart, updateCart, updateProductQuantity, deleteAllProductsFromCart } from '../controllers/cartControllers.js';
 import { isUser } from '../utils.js';
 
 const router = Router();
 
 router.get('/:cid', getCartById);
-router.post('/', addProductToCart); // Aplicando el middleware isUser
+router.post('/', addCart); // Aplicando el middleware isUser
+router.post('/:cid/product/:pid', addProductToCart);
 router.delete('/:cid/products/:pid', deleteProductFromCart);
 router.put('/:cid', updateCart);
 router.put('/:cid/products/:pid', updateProductQuantity);

@@ -13,6 +13,19 @@ export const getCartById = async (req, res) => {
   }
 };
 
+// POST /api/carts
+
+export const addCart = async (req, res) => {
+  try {
+    const cart = await CartModel.create({});
+    res.status(200).json({ cartId: cart._id });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).send("Server Error");
+  }
+};
+
+
 // POST /api/carts/:cartId/products/:productId
 
 export const addProductToCart = async (req, res) => {
