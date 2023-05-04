@@ -1,11 +1,11 @@
 import CartModel from "../dao/models/carts.models.js";
 import ProductModel from "../dao/models/products.models.js";
 
-// GET /api/carts/:cid
+// GET /api/carts/:cartId
 
 export const getCartById = async (req, res) => {
   try {
-    const cart = await CartModel.findById(req.params.cid).populate("products.product");
+    const cart = await CartModel.findById(req.params.cartId).populate("products.product");
     res.status(200).json(cart);
   } catch (err) {
     console.error(err.message);
@@ -17,11 +17,15 @@ export const getCartById = async (req, res) => {
 
 export const addProductToCart = async (req, res) => {
   try {
-    const cart = await CartModel.findById(req.params.cid);
-    const product = await ProductModel.findById(req.params.pid);
+    const { cartId, productId } = req.body;
+    const cart = await CartModel.findById(cartId);
+    const product = await ProductModel.findById(productId);
+
+    if (!cart || !product) {
+      return res.status(404).json({ message: "Cart or product not found" });
+    }
 
     cart.products.push({ product: product._id, quantity: 1 });
-
     await cart.save();
 
     res.status(200).json(cart);

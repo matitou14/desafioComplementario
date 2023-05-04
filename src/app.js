@@ -46,7 +46,7 @@ app.use(express.static(__dirname + '/public'));
 app.use('/realtimeproducts', routerViews);
 app.use('/', sessionRouter);
 app.use('/products',passportCall ('jwt'), productRouter );
-app.use('/carts', cartRouter );
+app.use('/api/carts', cartRouter );
 app.get('/', (req, res) => {
   res.render('index')
 });
