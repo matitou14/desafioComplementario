@@ -4,7 +4,7 @@ const enviroment  = 'PRODUCTION'
 dotenv.config({
     path: enviroment === 'DEVELOPMENT'
     ? '.env.dev'
-    : '.env.production'
+    : '.env.prod'
 })
 
 export default {

@@ -1,66 +1,79 @@
-import axios from "axios";
+import CartModel from '../dao/models/carts.models.js' 
+import MongoDAO from '../dao/models/DAO/MongoDAO.js'
 
-const API_URL = "/carts/";
+const mongoDAO = new MongoDAO();
 
-const getCartById = async (cartId) => {
-  try {
-    const response = await axios.get(API_URL + cartId);
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response.data);
+export default class CartService {
+  
+  async getCartById(cartId) {
+    try {
+      const cart = await mongoDAO.findById(CartModel, cartId).populate('products.product').exec()
+      return cart
+    } catch (err) {
+      throw new Error(`Error al buscar el carrito con ID ${cartId}: ${err.message}`)
+    }
   }
-};
 
-const addProductToCart = async (cartId, productId) => {
-  try {
-    const response = await axios.post(API_URL + cartId + "/products/" + productId);
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response.data);
+  async addToCart(userId, productId, quantity) {
+    try {
+      let cart = await mongoDAO.findOne(CartModel, { user: userId })
+
+      if (!cart) {
+        cart = new CartModel({ user: userId })
+      }
+
+      const productIndex = cart.products.findIndex(item => item.product.toString() === productId)
+
+      if (productIndex > -1) {
+        cart.products[productIndex].quantity += quantity
+      } else {
+        cart.products.push({ product: productId, quantity })
+      }
+
+      await mongoDAO.save(cart)
+      return cart
+    } catch (err) {
+      throw err
+    }
   }
-};
 
-const deleteProductFromCart = async (cartId, productId) => {
-  try {
-    const response = await axios.delete(API_URL + cartId + "/products/" + productId);
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response.data);
+  async removeFromCart(userId, productId) {
+    try {
+      const cart = await mongoDAO.findOne(CartModel, { user: userId })
+
+      if (!cart) {
+        throw new Error('Cart not found')
+      }
+
+      const productIndex = cart.products.findIndex(item => item.product.toString() === productId)
+
+      if (productIndex === -1) {
+        throw new Error('Product not found in cart')
+      }
+
+      cart.products.splice(productIndex, 1)
+
+      await mongoDAO.save(cart)
+      return cart
+    } catch (err) {
+      throw err
+    }
   }
-};
 
-const updateCart = async (cartId, cartData) => {
-  try {
-    const response = await axios.put(API_URL + cartId, cartData);
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response.data);
+  async clearCart(userId) {
+    try {
+      const cart = await mongoDAO.findOne(CartModel, { user: userId })
+
+      if (!cart) {
+        throw new Error('Cart not found')
+      }
+
+      cart.products = []
+
+      await mongoDAO.save(cart)
+      return cart
+    } catch (err) {
+      throw err
+    }
   }
-};
-
-const updateProductQuantity = async (cartId, productId, quantity) => {
-  try {
-    const response = await axios.put(API_URL + cartId + "/products/" + productId, { quantity });
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response.data);
-  }
-};
-
-const deleteAllProductsFromCart = async (cartId) => {
-  try {
-    const response = await axios.delete(API_URL + cartId);
-    return response.data;
-  } catch (error) {
-    throw new Error(error.response.data);
-  }
-};
-
-export default {
-  getCartById,
-  addProductToCart,
-  deleteProductFromCart,
-  updateCart,
-  updateProductQuantity,
-  deleteAllProductsFromCart,
-};
+}
