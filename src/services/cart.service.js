@@ -1,79 +1,30 @@
-import CartModel from '../dao/models/carts.models.js' 
-import MongoDAO from '../dao/models/DAO/MongoDAO.js'
+import  CartRepository  from '../repositories/CartRepository.js';
 
-const mongoDAO = new MongoDAO();
 
-export default class CartService {
-  
-  async getCartById(cartId) {
-    try {
-      const cart = await mongoDAO.findById(CartModel, cartId).populate('products.product').exec()
-      return cart
-    } catch (err) {
-      throw new Error(`Error al buscar el carrito con ID ${cartId}: ${err.message}`)
-    }
-  }
+ const cartRepository = new CartRepository();
 
-  async addToCart(userId, productId, quantity) {
-    try {
-      let cart = await mongoDAO.findOne(CartModel, { user: userId })
+export const createCart = async (userId) => {
+  return cartRepository.createCart(userId);
+};
 
-      if (!cart) {
-        cart = new CartModel({ user: userId })
-      }
+export const getCartById = async (cartId) => {
+  return cartRepository.getCartById(cartId);
+};
 
-      const productIndex = cart.products.findIndex(item => item.product.toString() === productId)
+export const addProductToCart = async (cartId, productId, quantity) => {
+  return cartRepository.addProductToCart(cartId, productId, quantity);
+};
 
-      if (productIndex > -1) {
-        cart.products[productIndex].quantity += quantity
-      } else {
-        cart.products.push({ product: productId, quantity })
-      }
+export const updateProductQuantity = async (cartId, productId, quantity) => {
+  return cartRepository.updateProductQuantity(cartId, productId, quantity);
+};
 
-      await mongoDAO.save(cart)
-      return cart
-    } catch (err) {
-      throw err
-    }
-  }
+export const deleteProductFromCart = async (cartId, productId) => {
+  return cartRepository.deleteProductFromCart(cartId, productId);
+};
 
-  async removeFromCart(userId, productId) {
-    try {
-      const cart = await mongoDAO.findOne(CartModel, { user: userId })
+export const deleteAllProductsFromCart = async (cartId) => {
+  return cartRepository.deleteAllProductsFromCart(cartId);
+};
 
-      if (!cart) {
-        throw new Error('Cart not found')
-      }
-
-      const productIndex = cart.products.findIndex(item => item.product.toString() === productId)
-
-      if (productIndex === -1) {
-        throw new Error('Product not found in cart')
-      }
-
-      cart.products.splice(productIndex, 1)
-
-      await mongoDAO.save(cart)
-      return cart
-    } catch (err) {
-      throw err
-    }
-  }
-
-  async clearCart(userId) {
-    try {
-      const cart = await mongoDAO.findOne(CartModel, { user: userId })
-
-      if (!cart) {
-        throw new Error('Cart not found')
-      }
-
-      cart.products = []
-
-      await mongoDAO.save(cart)
-      return cart
-    } catch (err) {
-      throw err
-    }
-  }
-}
+export default CartRepository;

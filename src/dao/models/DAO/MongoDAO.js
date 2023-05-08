@@ -1,50 +1,62 @@
-import mongoose from 'mongoose'
+import mongoose from 'mongoose';
+import CartModel from '../carts.models.js';
+import ProductModel from '../products.models.js';
+import UserModel from '../user.models.js';
 
-export default class MongoDAO {
-    constructor(config) {
-        this.mongoose = mongoose.connect(config.url).catch(error => {
-            console.log(error)
-            process.exit()
-        })
 
-        const timestamp = {timestamps: {createdAt: 'created_at', updatedAt: 'updated_at'}}
 
-        // Agregar los modelos de MongoDB
-        const userSchema = mongoose.Schema(User.schema, timestamp)
-        const cartSchema = mongoose.Schema(CartModel.schema, timestamp)
-        const productSchema = mongoose.Schema(ProductModel.schema, timestamp)
+export default class MongoDAO{
+constructor(config) {
+  this.mongoose = mongoose.connect(config.MONGO_URI).catch(error => {
+    console.log('Error connecting to MongoDB:', error);
+   process.exit()
+  })
+  const timestamp = {timestamps: {createdAt: 'created_at', updatedAt: 'updated_at'}}
+  const cartSchema = mongoose.Schema(CartModel.schema, timestamp)
+  const productSchema = mongoose.Schema(ProductModel.schema, timestamp)
+  const userSchema = mongoose.Schema(UserModel.schema, timestamp)
+  this.models = {
+    [CartModel.modelName]: mongoose.model(CartModel.modelName, cartSchema),
+    [ProductModel.modelName]: mongoose.model(ProductModel.modelName, productSchema),
+    [UserModel.modelName]: mongoose.model(UserModel.modelName, userSchema),
+  }
+}
 
-        this.models = {
-            [User.model]: mongoose.model(User.model, userSchema),
-            [CartModel.model]: mongoose.model(CartModel.model, cartSchema),
-            [ProductModel.model]: mongoose.model(ProductModel.model, productSchema)
-        }
-    }
+get = async(options, entity) => {
+  if (!this.models[entity]) throw new Error('Entity not found in models')
+  let results = await this.models[entity].find(options)
+  return results.map(result =>  result.toObject())
+}
 
-    async create(modelName, data) {
-        const Model = this.models[modelName]
-        const document = new Model(data)
-        await document.save()
-        return document
-    }
-
-    async find(modelName, query = {}) {
-        const Model = this.models[modelName]
-        return Model.find(query)
-    }
-
-    async findById(modelName, id) {
-        const Model = this.models[modelName]
-        return Model.findById(id)
-    }
-
-    async update(modelName, id, data) {
-        const Model = this.models[modelName]
-        return Model.findByIdAndUpdate(id, data, { new: true })
-    }
-
-    async delete(modelName, id) {
-        const Model = this.models[modelName]
-        return Model.findByIdAndDelete(id)
-    }
+insert= async(document, entity) => {
+  if (!this.models[entity]) throw new Error('Entity not found in models')
+  try {
+      let instance = new this.models[entity](document)
+      let result = await instance.save()
+      return result ? result.toObject() : null
+  } catch(error) {
+      console.log(error)
+      return null
+  }
+}
+update = async(id, updateDocument, entity) => {
+  if (!this.models[entity]) throw new Error('Entity not found in models')
+  try {
+    let result = await this.models[entity].findByIdAndUpdate(id, updateDocument, { new: true })
+    return result ? result.toObject() : null
+  } catch(error) {
+    console.log(error)
+    return null
+  }
+}
+delete= async(id, entity) => {
+  if (!this.models[entity]) throw new Error('Entity not found in models')
+  try {
+    let result = await this.models[entity].findByIdAndDelete(id)
+    return result ? result.toObject() : null
+  } catch(error) {
+    console.log(error)
+    return null
+  }
+}
 }

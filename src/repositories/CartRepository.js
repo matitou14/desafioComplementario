@@ -1,7 +1,7 @@
-import MongoDAO from '../services/mongo.dao';
-import CartModel from '../models/CartModel';
+import mongoDAO from '../dao/models/DAO/MongoDAO.js';
+import CartModel from '../dao/models/carts.models.js'
 
-export default class CartRepository extends MongoDAO {
+export default class CartRepository extends mongoDAO {
   constructor(config) {
     super(config);
     const timestamp = { timestamps: { createdAt: 'created_at', updatedAt: 'updated_at' } };

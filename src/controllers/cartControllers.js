@@ -1,100 +1,81 @@
-import CartService from '../services/cart.service.js';
+import  CartService  from '../services/cart.service.js';
 
 const cartService = new CartService();
 
-export default class CartController {
-  async addCart(req, res) {
+const CartController = {
+  getCartById: async (req, res) => {
     try {
-      const cart = await cartService.createCart(req.body.userId);
+      const { cid } = req.params;
+      const cart = await cartService.getCartById(cid);
+      res.status(200).json(cart);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error al obtener el carrito' });
+    }
+  },
+  addCart: async (req, res) => {
+    try {
+      const { userId } = req.user;
+      const cart = await cartService.addCart(userId);
       res.status(201).json(cart);
-    } catch (err) {
-      res.status(500).json({ error: err.message });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error al agregar el carrito' });
     }
-  }
-
-  async getCartById(req, res) {
-    try {
-      const cart = await cartService.getCartById(req.params.cid);
-      if (!cart) {
-        res.status(404).json({ error: 'Cart not found' });
-      } else {
-        res.json(cart);
-      }
-    } catch (err) {
-      res.status(500).json({ error: err.message });
-    }
-  }
-
-  async addProductToCart(req, res) {
+  },
+  addProductToCart: async (req, res) => {
     try {
       const { cid, pid } = req.params;
       const { quantity } = req.body;
       const cart = await cartService.addProductToCart(cid, pid, quantity);
-      if (!cart) {
-        res.status(404).json({ error: 'Cart not found' });
-      } else {
-        res.json(cart);
-      }
-    } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(200).json(cart);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error al agregar el producto al carrito' });
     }
-  }
-
-  async deleteProductFromCart(req, res) {
+  },
+  deleteProductFromCart: async (req, res) => {
     try {
       const { cid, pid } = req.params;
       const cart = await cartService.deleteProductFromCart(cid, pid);
-      if (!cart) {
-        res.status(404).json({ error: 'Cart not found' });
-      } else {
-        res.json(cart);
-      }
-    } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(200).json(cart);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error al eliminar el producto del carrito' });
     }
-  }
-
-  async updateCart(req, res) {
+  },
+  updateCart: async (req, res) => {
     try {
       const { cid } = req.params;
-      const { userId } = req.body;
-      const cart = await cartService.updateCart(cid, userId);
-      if (!cart) {
-        res.status(404).json({ error: 'Cart not found' });
-      } else {
-        res.json(cart);
-      }
-    } catch (err) {
-      res.status(500).json({ error: err.message });
+      const { status } = req.body;
+      const cart = await cartService.updateCart(cid, { status });
+      res.status(200).json(cart);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error al actualizar el carrito' });
     }
-  }
-
-  async updateProductQuantity(req, res) {
+  },
+  updateProductQuantity: async (req, res) => {
     try {
       const { cid, pid } = req.params;
       const { quantity } = req.body;
       const cart = await cartService.updateProductQuantity(cid, pid, quantity);
-      if (!cart) {
-        res.status(404).json({ error: 'Cart not found' });
-      } else {
-        res.json(cart);
-      }
-    } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(200).json(cart);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ message: 'Error al actualizar la cantidad del producto en el carrito' });
     }
-  }
-
-  async deleteAllProductsFromCart(req, res) {
+  },
+  deleteAllProductsFromCart: async (req, res) => {
     try {
       const { cid } = req.params;
       const cart = await cartService.deleteAllProductsFromCart(cid);
-      if (!cart) {
-        res.status(404).json({ error: 'Cart not found' });
-      } else {
-        res.json(cart);
-      }
-    } catch (err) {
-      res.status(500).json({ error: err.message });
+      res.status(200).json(cart);
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({ message: 'Internal server error' });
     }
   }
-}
+};
+
+export default CartController;
