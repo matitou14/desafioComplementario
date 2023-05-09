@@ -1,53 +1,57 @@
-import UserModel from '../dao/models/user.models.js'
-import {createHash} from '../utils.js'
+import UserDAO from "../dao/models/DAO/UserDao.js";
+import { createHash } from "../utils.js";
 
-export const createUser = async (userData) => {
-  const userNew = {
-    first_name: userData.first_name,
-    last_name: userData.last_name,
-    age: userData.age,
-    email: userData.email,
-    password: createHash(userData.password)
+class UserService {
+  constructor() {
+    this.userDAO = new UserDAO();
   }
-  const user = new UserModel(userNew);
-  await user.save();
-  return user;
-};
 
-export const getUserByEmail = async (email) => {
-  const user = await UserModel.findOne({ email });
-  return user;
-};
+  async getAllUsers() {
+    const users = await this.userDAO.getAllUsers();
+    return users;
+  }
 
-export const loginUser = (req, res, next) => {
-  passport.authenticate('local', (err, user, info) => {
-    if (err) {
-      return next(err);
-    }
+  async getUserById(id) {
+    const user = await this.userDAO.getUserById(id);
+    return user;
+  }
+
+  async createUser(user) {
+    const passwordHashed = createHash(user.password);
+    const newUser = {
+      first_name: user.first_name,
+      last_name: user.last_name,
+      email: user.email,
+      age: user.age,
+      password: passwordHashed,
+      cart: user.cart,
+      role: user.role,
+    };
+    const createdUser = await this.userDAO.createUser(newUser);
+    return createdUser;
+  }
+
+  async updateUser(id, user) {
+    const updatedUser = await this.userDAO.updateUser(id, user);
+    return updatedUser;
+  }
+
+  async deleteUser(id) {
+    const deletedUser = await this.userDAO.deleteUser(id);
+    return deletedUser;
+  }
+
+  async login(email, password) {
+    const user = await this.userDAO.getUserByEmail(email);
     if (!user) {
-      return res.status(401).render('errors/db', {
-        error: 'Usuario no encontrado'
-      });
+      return false;
     }
-    req.logIn(user, (err) => {
-      if (err) {
-        return next(err);
-      }
-      res.cookie(JWT_COOKIE_NAME, req.user.token).redirect('/products');
-    });
-  })(req, res, next);
-};
+    const isValidPassword = await user.verifyPassword(password);
+    if (!isValidPassword) {
+      return false;
+    }
+    return user;
+  }
+}
 
-export const logoutUser = (req, res) => {
-  res.clearCookie(JWT_COOKIE_NAME).redirect('/session/login');
-};
-
-export const getCurrentUser = (req) => {
-  const { first_name, last_name, email } = req.user;
-  const user = {
-    first_name,
-    last_name,
-    email,
-  };
-  return user;
-};
+export default UserService;

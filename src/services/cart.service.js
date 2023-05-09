@@ -1,30 +1,59 @@
-import  CartRepository  from '../repositories/CartRepository.js';
+import CartDAO from "../dao/cartDAO.js";
 
+class CartService {
+  constructor() {
+    this.cartDAO = new CartDAO();
+  }
 
- const cartRepository = new CartRepository();
+  async getCartById(id) {
+    const cart = await this.cartDAO.getCartById(id);
+    return cart;
+  }
 
-export const createCart = async (userId) => {
-  return cartRepository.createCart(userId);
-};
+  async addCart(userId) {
+    const newCart = {
+      user: userId,
+      products: [],
+    };
+    const createdCart = await this.cartDAO.addCart(newCart);
+    return createdCart;
+  }
 
-export const getCartById = async (cartId) => {
-  return cartRepository.getCartById(cartId);
-};
+  async addProductToCart(cartId, productId, quantity) {
+    const updatedCart = await this.cartDAO.addProductToCart(
+      cartId,
+      productId,
+      quantity
+    );
+    return updatedCart;
+  }
 
-export const addProductToCart = async (cartId, productId, quantity) => {
-  return cartRepository.addProductToCart(cartId, productId, quantity);
-};
+  async deleteProductFromCart(cartId, productId) {
+    const updatedCart = await this.cartDAO.deleteProductFromCart(
+      cartId,
+      productId
+    );
+    return updatedCart;
+  }
 
-export const updateProductQuantity = async (cartId, productId, quantity) => {
-  return cartRepository.updateProductQuantity(cartId, productId, quantity);
-};
+  async updateCart(cartId, updates) {
+    const updatedCart = await this.cartDAO.updateCart(cartId, updates);
+    return updatedCart;
+  }
 
-export const deleteProductFromCart = async (cartId, productId) => {
-  return cartRepository.deleteProductFromCart(cartId, productId);
-};
+  async updateProductQuantity(cartId, productId, quantity) {
+    const updatedCart = await this.cartDAO.updateProductQuantity(
+      cartId,
+      productId,
+      quantity
+    );
+    return updatedCart;
+  }
 
-export const deleteAllProductsFromCart = async (cartId) => {
-  return cartRepository.deleteAllProductsFromCart(cartId);
-};
+  async deleteAllProductsFromCart(cartId) {
+    const updatedCart = await this.cartDAO.deleteAllProductsFromCart(cartId);
+    return updatedCart;
+  }
+}
 
-export default CartRepository;
+export default CartService;

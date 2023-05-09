@@ -12,12 +12,10 @@ import morgan from 'morgan';
 import intializePassport from './config/passport.config.js'
 import passport from 'passport';
 import cookieParser from 'cookie-parser';
-
-  
+import config from '../src/config/config.js';
 
 
 const app = express()
-const uri = "mongodb+srv://matitouthe14:Alejo.2510@cluster0.rexogvr.mongodb.net/ecommerce?retryWrites=true&w=majority"
 
 app.use(session({
   secret:'c0d3r',
@@ -39,10 +37,6 @@ app.set('view engine', 'handlebars');
 app.use(express.static(__dirname + '/public'));
 
 
-
-
-
-
 app.use('/realtimeproducts', routerViews);
 app.use('/', sessionRouter);
 app.use('/products',passportCall ('jwt'), productRouter );
@@ -54,14 +48,13 @@ app.get('/', (req, res) => {
 
 let messages = []
 
-
-
 mongoose.set('strictQuery', false)
-mongoose.connect(uri)
+mongoose.connect(config.MONGO_URI, 
+  { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
     console.log('Connected to database');
     
-    const server = app.listen(8080, ( () => console.log('Server running on 8080 port')));
+    const server = app.listen(config.PORT, ( () => console.log(`Server running on ${config.PORT} port`)));
     server.on ('error', e => console.log(e));
     const io = new Server(server)
     io.on('connection', socket => {
@@ -80,8 +73,3 @@ mongoose.connect(uri)
     console.log('Error connecting to database', error);
     return
   });
-
-
-
-
-

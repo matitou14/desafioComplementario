@@ -1,14 +1,28 @@
-import { getAllProducts, getProductById, getProductByPid, createProduct, updateProduct, deleteProduct   } from "../services/products.service.js";
+import {
+  getAllProducts,
+  getProductById,
+  getProductByPid,
+  createProduct,
+  updateProduct,
+  deleteProduct
+} from "../services/products.service.js";
 
+// Controlador para obtener todos los productos
 export const getAllProductsController = async (req, res) => {
   try {
     const { page = 1 } = req.query;
     const limit = 4;
     
     const result = await getAllProducts(page, limit);
+    
+    // Generar los enlaces para las páginas previa y siguiente
     const prevLink = result.hasPrevPage ? `/products?page=${result.prevPage}` : '';
     const nextLink = result.hasNextPage ? `/products?page=${result.nextPage}` : '';
-    const user = req.user;
+    
+    // Incluir el usuario en la respuesta si está autenticado
+    const user = req.user ? req.user.user : null;
+    
+    // Enviar los datos al template para renderizar la vista
     const data = {
       products: result.products, 
       totalPages: result.totalPages,
@@ -19,7 +33,7 @@ export const getAllProductsController = async (req, res) => {
       hasNextPage: result.hasNextPage,
       prevLink,
       nextLink,
-      user: req.user.user
+      user
     };
     res.render('products', data);
   } catch (error) {
@@ -28,6 +42,7 @@ export const getAllProductsController = async (req, res) => {
   }
 };
 
+// Controlador para obtener un producto por su ID
 export const getProductByIdController = async (req, res) => {
   try {
     const id = req.params.id;
@@ -42,6 +57,7 @@ export const getProductByIdController = async (req, res) => {
   }
 };
 
+// Controlador para obtener un producto por su PID
 export const getProductByPidController = async (req, res) => {
   try {
     const pid = req.params.pid;
@@ -56,6 +72,7 @@ export const getProductByPidController = async (req, res) => {
   }
 };
 
+// Controlador para crear un nuevo producto
 export const createProductController = async (req, res) => {
   try {
     const newProduct = req.body;
@@ -67,6 +84,7 @@ export const createProductController = async (req, res) => {
   }
 };
 
+// Controlador para actualizar un producto existente
 export const updateProductController = async (req, res) => {
   try {
     const pid = req.params.pid;
@@ -82,6 +100,7 @@ export const updateProductController = async (req, res) => {
   }
 };
 
+// Controlador para eliminar un producto existente
 export const deleteProductController = async (req, res) => {
   try {
     const pid = req.params.pid;

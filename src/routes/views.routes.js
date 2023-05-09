@@ -5,8 +5,6 @@ import { isUser } from "../utils.js";
 const router = Router();
 
 router.get('/', getAllMessages);
-
-router.post('/', isUser, addMessageController);
-
+router.post('/', isUser(), addMessageController);
 
 export default router;
