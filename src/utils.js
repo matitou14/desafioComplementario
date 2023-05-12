@@ -52,8 +52,12 @@ export const superadminAuth = (req, res, next) => {
     if (req.user) {
       return next();
     }
+    if (!res) {
+      return console.error('Response object is not defined');
+    }
     res.status(401).json({message: 'No autorizado'});
   };
+  
 
 export default __dirname;
 

@@ -2,9 +2,10 @@ import passport from 'passport';
 import { JWT_COOKIE_NAME } from '../config/credentials.js';
 import { success } from '../responses/user.response.js';
 import { createHash } from '../utils.js';
+import  UserService  from '../services/users.service.js'
 
 const LOCAL_STRATEGY_NAME = 'local';
-
+const userService = new UserService();
 // Register
 export const createRegister = (req, res) => {
   res.render('sessions/register');
@@ -14,13 +15,14 @@ export const createUserController = async (req, res) => {
   try {
     const { name, email, password } = req.body;
     const hashedPassword = await createHash(password);
-    const user = await createUser({ name, email, password: hashedPassword });
+    const user = await createUser({ name, email, password: hashedPassword }); // fix typo
     success(res, "User created successfully", user);
   } catch (error) {
     console.log(error);
     res.status(500).send("Error creating user");
   }
 }
+
 // Login
 export const seeLogin = (req, res) => {
   res.render('sessions/login');
