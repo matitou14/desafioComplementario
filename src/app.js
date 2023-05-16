@@ -13,6 +13,7 @@ import intializePassport from './config/passport.config.js'
 import passport from 'passport';
 import cookieParser from 'cookie-parser';
 import config from '../src/config/config.js';
+import mockingRouter from './routes/mockingProd.routes.js'
 
 
 const app = express()
@@ -36,9 +37,7 @@ app.set('views', `${__dirname}/views`);
 app.set('view engine', 'handlebars');
 app.use(express.static(__dirname + '/public'));
 
-app.get('/mockingproducts', (req, res) =>{
-  res.render('mockingproducts')
-})
+app.use('/mockingproducts', mockingRouter);
 app.use('/realtimeproducts', routerViews);
 app.use('/', sessionRouter);
 app.use('/products',passportCall ('jwt'), productRouter );
