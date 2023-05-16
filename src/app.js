@@ -36,7 +36,9 @@ app.set('views', `${__dirname}/views`);
 app.set('view engine', 'handlebars');
 app.use(express.static(__dirname + '/public'));
 
-
+app.get('/mockingproducts', (req, res) =>{
+  res.render('mockingproducts')
+})
 app.use('/realtimeproducts', routerViews);
 app.use('/', sessionRouter);
 app.use('/products',passportCall ('jwt'), productRouter );

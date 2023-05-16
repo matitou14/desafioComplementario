@@ -2,24 +2,24 @@ import passport from 'passport';
 import { JWT_COOKIE_NAME } from '../config/credentials.js';
 import { success } from '../responses/user.response.js';
 import { createHash } from '../utils.js';
-import  UserService  from '../services/users.service.js'
+import {createUser} from '../services/users.service.js';
 
 const LOCAL_STRATEGY_NAME = 'local';
-const userService = new UserService();
+
 // Register
 export const createRegister = (req, res) => {
   res.render('sessions/register');
 };
 
-export const createUserController = async (req, res) => {
+export async function createUserController(req, res) {
   try {
     const { name, email, password } = req.body;
     const hashedPassword = await createHash(password);
-    const user = await createUser({ name, email, password: hashedPassword }); // fix typo
-    success(res, "User created successfully", user);
+    const user = await createUser({ name, email, password: hashedPassword });
+    res.status(201).json({ message: "User created successfully", user });
   } catch (error) {
-    console.log(error);
-    res.status(500).send("Error creating user");
+    console.error(error);
+    res.status(500).json({ message: "Error creating user" });
   }
 }
 
@@ -66,7 +66,7 @@ export const loginGithubCallback = passport.authenticate('github', {
 export const currentSession = async (req, res) => {
   try {
     const user = await getCurrentUser(req);
-    const userDTO = new UserDtoDb(user);
+    const userDTO = new userDTO(user);
     res.json(userDTO);
   } catch (error) {
     res.status(500).json({ message: error.message });

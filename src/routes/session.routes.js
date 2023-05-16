@@ -8,7 +8,7 @@ router.post('/session/register', createUserController);
 router.get('/session/login', seeLogin);
 router.post('/session/login', loginUser);
 router.get('/api/session/github', loginGithub);
-router.get('/api/session/github-callback', loginGithubCallback);
+router.get('/api/session/githubcallback', loginGithubCallback);
 router.get('/current', currentSession);
 router.post('/session/logout', logoutUser);
 
