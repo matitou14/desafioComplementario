@@ -38,6 +38,10 @@ app.set('view engine', 'handlebars');
 app.use(express.static(__dirname + '/public'));
 
 app.use('/mockingproducts', mockingRouter);
+app.use((err, req, res, next) => {
+  console.error(err.stack);
+  res.status(500).send('Something went wrong!');
+});
 app.use('/realtimeproducts', routerViews);
 app.use('/', sessionRouter);
 app.use('/products',passportCall ('jwt'), productRouter );
