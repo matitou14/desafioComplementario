@@ -1,5 +1,6 @@
-import winston, { transports } from "winston";
+import winston from "winston";
 import dotenv from 'dotenv'
+
 
 
 
@@ -22,8 +23,11 @@ const logLevels = {
       winston.format.simple()
     ),
     transports: [
+      
       new winston.transports.Console()
+
     ]
+
   });
   
   // Configuración del logger para producción
@@ -34,7 +38,7 @@ const logLevels = {
       winston.format.simple()
     ),
     transports: [
-      new winston.transports.File({ filename: 'errors.log', level: 'info' })
+      new winston.transports.File({ filename: 'errors.log', level: 'error' })
     ]
   });
   

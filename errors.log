@@ -15,3 +15,15 @@ info: Server running on 8080 port {"timestamp":"2023-05-30T06:08:26.077Z"}
 debug: This is a debug message {"timestamp":"2023-05-30T06:08:26.381Z"}
 http: This is a Http message {"timestamp":"2023-05-30T06:08:26.382Z"}
 info: Testing the logger {"timestamp":"2023-05-30T06:08:26.382Z"}
+info: Connected to database {"timestamp":"2023-05-30T06:10:13.558Z"}
+info: Server running on 8080 port {"timestamp":"2023-05-30T06:10:13.600Z"}
+debug: This is a debug message {"timestamp":"2023-05-30T06:10:16.189Z"}
+http: This is a Http message {"timestamp":"2023-05-30T06:10:16.190Z"}
+info: Testing the logger {"timestamp":"2023-05-30T06:10:16.190Z"}
+warning: This is a warning message {"timestamp":"2023-05-30T06:10:16.191Z"}
+error: This is an error message {"timestamp":"2023-05-30T06:10:16.192Z"}
+debug: This is a debug message {"timestamp":"2023-05-30T06:10:44.574Z"}
+http: This is a Http message {"timestamp":"2023-05-30T06:10:44.575Z"}
+info: Testing the logger {"timestamp":"2023-05-30T06:10:44.576Z"}
+warning: This is a warning message {"timestamp":"2023-05-30T06:10:44.577Z"}
+error: This is an error message {"timestamp":"2023-05-30T06:10:44.578Z"}
