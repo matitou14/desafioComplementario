@@ -37,10 +37,21 @@ app.engine('handlebars', handlebars.engine());
 app.set('views', `${__dirname}/views`);
 app.set('view engine', 'handlebars');
 app.use(express.static(__dirname + '/public'));
+app.get('/loggerTest', (req, res) => {
+  
+  logger.debug('This is a debug message');
+  logger.http('This is a Http message');
+  logger.info('Testing the logger');
+  logger.warning('This is a warning message');
+  logger.fatal('This is an fatal error message');
+  logger.error('This is an error message');
+
+  res.send('The logger is working properly');
+});
 
 app.use('/mockingproducts', mockingRouter);
 app.use((err, req, res, next) => {
-  console.error(err.stack);
+  logger.error(err.stack);
   res.status(500).send('Something went wrong!');
 });
 app.use('/realtimeproducts', routerViews);
@@ -58,14 +69,14 @@ mongoose.set('strictQuery', false)
 mongoose.connect(config.MONGO_URI, 
   { useNewUrlParser: true, useUnifiedTopology: true })
   .then(() => {
-    console.log('Connected to database');
+    logger.info('Connected to database');
     
     const server = app.listen(config.PORT, ( () => logger.info(`Server running on ${config.PORT} port`)));
     server.on ('error', e => console.log(e));
     const io = new Server(server)
     io.on('connection', socket => {
         console.log('New client connected');
-        socket.on('disconnect', () => console.log('Client disconnected'));
+        socket.on('disconnect', () => logger.http('Client disconnected'));
         socket.on('message', data => {
             messages.push(data)
             io.emit('logs', messages)
