@@ -1,6 +1,6 @@
 import { Router } from "express";
 import path from 'path';
-import { __dirname } from "../utils.js";
+import __dirname  from "../utils.js";
 import { 
   getAllProductsController,
   getProductByIdController,
@@ -15,7 +15,7 @@ const router = Router();
 
 const products = [];
 
-// const prodfile = path.join(__dirname, 'data', 'products.json');
+const prodfile = path.join(__dirname, 'data', 'products.json');
 
 router.get('/', getAllProductsController);
 router.get('/:id', getProductByIdController);
