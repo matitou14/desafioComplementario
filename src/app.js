@@ -14,6 +14,7 @@ import passport from 'passport';
 import cookieParser from 'cookie-parser';
 import config from '../src/config/config.js';
 import mockingRouter from './routes/mockingProd.routes.js'
+import logger from './config/logger.js'
 
 
 const app = express()
@@ -59,7 +60,7 @@ mongoose.connect(config.MONGO_URI,
   .then(() => {
     console.log('Connected to database');
     
-    const server = app.listen(config.PORT, ( () => console.log(`Server running on ${config.PORT} port`)));
+    const server = app.listen(config.PORT, ( () => logger.info(`Server running on ${config.PORT} port`)));
     server.on ('error', e => console.log(e));
     const io = new Server(server)
     io.on('connection', socket => {
