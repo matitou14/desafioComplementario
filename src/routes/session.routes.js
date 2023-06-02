@@ -13,5 +13,6 @@ router.get('/current', currentSession);
 router.post('/session/logout', logoutUser);
 router.get('/reset-password',renderResetPasswordPage);
 router.post('/reset-password', resetPassword);
+router.get('/reset-password/:token',renderResetPasswordPage);
 
 export default router;

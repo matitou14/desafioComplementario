@@ -93,8 +93,8 @@ export const resetPassword = async (req, res) => {
     const mailOptions = {
       from: 'mat.rodri@gmail.com',
       to:'879779b1c1f9b9@inbox.mailtrap.io',
-      subject: 'Restablecimiento de contraseña',
-      html: `Haz clic en el siguiente enlace para restablecer tu contraseña: <a href="${resetUrl}">Restablecer contraseña</a>`,
+      subject: 'Don Pedro restablecer contraseña',
+    html: `Haz clic en el siguiente enlace para restablecer tu contraseña: <a href="${resetUrl}">Restablecer contraseña</a>`,
     };
 
     await transporter.sendMail(mailOptions);
@@ -105,5 +105,6 @@ export const resetPassword = async (req, res) => {
   }
 };
 export function renderResetPasswordPage(req, res) {
-  res.render('resetPassword');
+  const token = req.params.token;
+  res.render('resPas', { token });
 }
