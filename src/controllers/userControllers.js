@@ -4,6 +4,8 @@ import { success } from '../responses/user.response.js';
 import { createHash } from '../utils.js';
 import {createUser} from '../services/users.service.js';
 import logger from '../config/logger.js'
+import { generateResetToken } from '../utils.js';
+import transporter  from '../helpers/nodemailerConfig.js';
 const LOCAL_STRATEGY_NAME = 'local';
 
 // Register
@@ -81,3 +83,27 @@ export const logoutUser = (req, res) => {
   logger.info('User logged out');
 
 };
+
+export const resetPassword = async (req, res) => {
+  try {
+    const { email } = req.body;
+    const resetToken = generateResetToken(email);
+    const resetUrl = `http://localhost:8080/reset-password?token=${resetToken}`;
+
+    const mailOptions = {
+      from: 'mat.rodri@gmail.com',
+      to:'879779b1c1f9b9@inbox.mailtrap.io',
+      subject: 'Restablecimiento de contraseña',
+      html: `Haz clic en el siguiente enlace para restablecer tu contraseña: <a href="${resetUrl}">Restablecer contraseña</a>`,
+    };
+
+    await transporter.sendMail(mailOptions);
+    res.status(200).json({ message: 'Correo electrónico enviado' });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({ message: 'Error al enviar el correo electrónico' });
+  }
+};
+export function renderResetPasswordPage(req, res) {
+  res.render('resetPassword');
+}

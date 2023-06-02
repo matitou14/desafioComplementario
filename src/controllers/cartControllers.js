@@ -1,10 +1,17 @@
-import CartDAO from "../dao/models/DAO/CartDao.js"
-import ProductDAO from "../dao/models/DAO/ProductsDao.js"
+import CartDAO from "../dao/models/DAO/CartDao.js";
+import ProductDAO from "../dao/models/DAO/ProductsDao.js";
 
 class CartController {
   constructor() {
     this.cartDAO = new CartDAO();
     this.productDAO = new ProductDAO();
+    this.getCartById = this.getCartById.bind(this);
+    this.addCart = this.addCart.bind(this);
+    this.addProductToCart = this.addProductToCart.bind(this);
+    this.deleteProductFromCart = this.deleteProductFromCart.bind(this);
+    this.updateCart = this.updateCart.bind(this);
+    this.updateProductQuantity = this.updateProductQuantity.bind(this);
+    this.deleteAllProductsFromCart = this.deleteAllProductsFromCart.bind(this);
   }
 
   async getCartById(req, res) {

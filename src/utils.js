@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 import bcrypt from 'bcrypt'
 
-
+const TOKEN_SECRET ='wowisbackend'
 
 export const createHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(10));
 export const IsValidPassword = (user, password) => bcrypt.compareSync(password, user.password)
@@ -58,6 +58,11 @@ export const superadminAuth = (req, res, next) => {
     res.status(401).json({message: 'No autorizado'});
   };
   
+  export const generateResetToken = (email) => {
+    const token = jwt.sign({ email }, TOKEN_SECRET, { expiresIn: '1h' });
+    return token;
+  };
+
 
 export default __dirname;
 

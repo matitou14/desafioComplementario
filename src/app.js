@@ -61,7 +61,8 @@ app.use('/api/carts', cartRouter );
 app.get('/', (req, res) => {
   res.render('index')
 });
-
+app.get('/mail',async (req, res) => {
+});
 
 let messages = []
 
