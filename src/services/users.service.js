@@ -53,3 +53,25 @@ export async function login(email, password) {
   }
   return user;
 }
+
+export const resetPassword = async (userId, password) => {
+  try {
+    // Buscar el usuario en la base de datos por su ID
+    const user = await UserDAO.findById(userId);
+
+    if (!user) {
+      throw new Error('Usuario no encontrado');
+    }
+
+    // Actualizar la contraseña del usuario
+    user.password = password;
+    await user.save();
+
+    // Devolver un mensaje de éxito o cualquier otro resultado necesario
+    return { success: true, message: 'Contraseña restablecida exitosamente' };
+  } catch (error) {
+    // Manejar errores
+    console.error(error);
+    throw new Error('Error al restablecer la contraseña');
+  }
+};

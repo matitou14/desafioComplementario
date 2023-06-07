@@ -4,7 +4,8 @@ import { success } from '../responses/user.response.js';
 import { createHash } from '../utils.js';
 import {createUser} from '../services/users.service.js';
 import logger from '../config/logger.js'
-import { generateResetToken } from '../utils.js';
+import { generateResetToken, validateResetToken } from '../utils.js';
+import { resetPassword } from '../services/users.service.js';
 import transporter  from '../helpers/nodemailerConfig.js';
 const LOCAL_STRATEGY_NAME = 'local';
 
@@ -84,27 +85,40 @@ export const logoutUser = (req, res) => {
 
 };
 
-export const resetPassword = async (req, res) => {
+export const renderResetPasswordPage = (req, res) => {
+  const token = req.params.token;
+  const isValidToken = validateResetToken(token);
+
+  if (!isValidToken) {
+    return res.redirect('/session/login');
+  }
+
+  res.render('resPas', { token });
+};
+
+// Procesar solicitud de restablecimiento de contraseña
+export const processPasswordReset = async (req, res) => {
   try {
-    const { email } = req.body;
-    const resetToken = generateResetToken(email);
-    const resetUrl = `http://localhost:8080/reset-password?token=${resetToken}`;
+    const { token, password, confirmPassword } = req.body;
 
-    const mailOptions = {
-      from: 'mat.rodri@gmail.com',
-      to:'879779b1c1f9b9@inbox.mailtrap.io',
-      subject: 'Don Pedro restablecer contraseña',
-    html: `Haz clic en el siguiente enlace para restablecer tu contraseña: <a href="${resetUrl}">Restablecer contraseña</a>`,
-    };
-
-    await transporter.sendMail(mailOptions);
-    res.status(200).json({ message: 'Correo electrónico enviado' });
+    // Verificar si el token es válido y no ha expirado
+    const isValidToken = validateResetToken(token);
+    if (!isValidToken) {
+      return res.redirect('/session/login') // Redirigir a la página de inicio de sesión
+    }
+    
+    // Verificar si la contraseña y la confirmación coinciden
+    if (password !== confirmPassword) {
+      return res.render('reset-password', { token, error: 'Las contraseñas no coinciden' });
+    }
+    
+    // Restablecer la contraseña en la base de datos
+    await resetPassword(userId, password);
+    
+    // Redirigir a una página de éxito o al inicio de sesión
+    res.redirect(`/reset-password/${token}`); // Redirigir a la página de restablecimiento con el token
   } catch (error) {
     console.error(error);
-    res.status(500).json({ message: 'Error al enviar el correo electrónico' });
+    res.render('reset-password', { token, error: 'Error al restablecer la contraseña' });
   }
 };
-export function renderResetPasswordPage(req, res) {
-  const token = req.params.token;
-  res.render('resPas', { token });
-}

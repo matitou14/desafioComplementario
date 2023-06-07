@@ -1,14 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
-  <title>Restablecer Contraseña</title>
+  <meta charset="UTF-8">
+  <title>Restablecer contraseña</title>
 </head>
 <body>
-  <h1>Restablecer Contraseña</h1>
+  <h1>Restablecer contraseña</h1>
   <form action="/reset-password" method="POST">
-    <label for="password">Nueva Contraseña:</label>
-    <input type="password" id="password" name="password" required>
-    <button type="submit">Restablecer Contraseña</button>
+    <input type="hidden" name="token" value="{{token}}">
+    <label for="password">Nueva contraseña:</label>
+    <input type="password" name="password" id="password" required>
+    <br>
+    <label for="confirm-password">Confirmar contraseña:</label>
+    <input type="password" name="confirmPassword" id="confirm-password" required>
+    <br>
+    <input type="submit" value="Restablecer contraseña">
   </form>
 </body>
 </html>

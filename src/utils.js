@@ -59,9 +59,32 @@ export const superadminAuth = (req, res, next) => {
   };
   
   export const generateResetToken = (email) => {
-    const token = jwt.sign({ email }, TOKEN_SECRET, { expiresIn: '1h' });
+    const TOKEN_SECRET = 'tu_clave_secreta'; // Reemplaza esto con tu propia clave secreta
+    const expiresIn = '1h'; // Tiempo de expiración del token
+  
+    const token = jwt.sign({ email }, TOKEN_SECRET, { expiresIn });
+  
     return token;
   };
+
+  export function validateResetToken(token) {
+    try {
+      const decoded = jwt.verify(token, TOKEN_SECRET);
+      // Realiza la lógica de validación adicional según tus necesidades
+      // Por ejemplo, puedes verificar la fecha de expiración del token
+      const expirationDate = new Date(decoded.exp * 1000);
+      const currentDate = new Date();
+      if (currentDate > expirationDate) {
+        // El token ha expirado, retorna false
+        return false;
+      }
+      // El token es válido, retorna true
+      return true;
+    } catch (error) {
+      // Ocurrió un error al decodificar o verificar el token, retorna false
+      return false;
+    }
+  }
 
 
 export default __dirname;
