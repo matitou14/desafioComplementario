@@ -40,7 +40,7 @@ const swaggerOptions = {
   },
   
   apis: [
-    `${__dirname}/docs/**/*.yaml`
+    `${__dirname}/../docs/products/products.yaml`,
   ]
 }
 app.use(session({
