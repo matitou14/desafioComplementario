@@ -5,10 +5,6 @@ import { getAllMessages, addMessageController } from "../controllers/messages.co
 const router = Router();
 
 router.get('/', getAllMessages);
-<<<<<<< HEAD
-router.post('/', isUser, addMessageController);
-=======
 router.post('/', addMessageController);
->>>>>>> master
 
 export default router;

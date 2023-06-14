@@ -1,5 +1,6 @@
 import express from 'express'
 import { Server} from 'socket.io';
+import path from 'path';
 import productRouter from './routes/products.routes.js'
 import cartRouter from './routes/carts.routes.js'
 import routerViews from './routes/views.routes.js'
@@ -17,7 +18,7 @@ import mockingRouter from './routes/mockingProd.routes.js'
 import logger from './config/logger.js'
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
-import logger from '../src/logger.js';
+
 
 
 const app = express()
@@ -38,7 +39,9 @@ const swaggerOptions = {
     ]
   },
   
-  apis: [`${__dirname}/docs/**/*.yaml`]
+  apis: [
+    `${__dirname}/docs/**/*.yaml`
+  ]
 }
 app.use(session({
   secret:'c0d3r',
@@ -55,7 +58,8 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.engine('handlebars', handlebars.engine());
-app.set('views', `${__dirname}/views`);
+app.set('views', path.join(__dirname, 'views'));
+
 app.set('view engine', 'handlebars');
 app.use(express.static(__dirname + '/public'));
 app.get('/loggerTest', (req, res) => {

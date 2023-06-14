@@ -1,70 +1,65 @@
-import {fileURLToPath} from 'url';
-import {dirname} from 'path';
-import jwt from 'jsonwebtoken'
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
+import jwt from 'jsonwebtoken';
 import { JWT_PRIVATE_KEY, JWT_COOKIE_NAME } from './config/credentials.js';
-import passport from 'passport'
+import passport from 'passport';
+import bcrypt from 'bcrypt';
+
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
-import bcrypt from 'bcrypt'
-
-const TOKEN_SECRET ='wowisbackend'
 
 export const createHash = password => bcrypt.hashSync(password, bcrypt.genSaltSync(10));
-export const IsValidPassword = (user, password) => bcrypt.compareSync(password, user.password)
+export const IsValidPassword = (user, password) => bcrypt.compareSync(password, user.password);
 
 // JWT
 
 export const createToken = (user) => {
-    const token = jwt.sign ({user}, JWT_PRIVATE_KEY, {expiresIn:'24h'} )
-    return token
-}
-export const extractCookie = req =>{
-    return (req && req.cookies) ? req.cookies[JWT_COOKIE_NAME] : null
-}
+    const token = jwt.sign({ user }, JWT_PRIVATE_KEY, { expiresIn: '24h' });
+    return token;
+};
+export const extractCookie = req => {
+    return (req && req.cookies) ? req.cookies[JWT_COOKIE_NAME] : null;
+};
 
 export const passportCall = (Strategy) => {
     return (req, res, next) => {
         passport.authenticate(Strategy, (err, user, info) => {
-            if (err) return next (err)
-            if (!user)  return res.status(401).render('errors/db', {error: info.messages ? info.messages : info.toString()}) 
-            req.user = user
-            next()
-        })(req, res, next)
-    }
-}
+            if (err) return next(err);
+            if (!user) return res.status(401).render('errors/db', { error: info.messages ? info.messages : info.toString() });
+            req.user = user;
+            next();
+        })(req, res, next);
+    };
+};
 
 export const superadminAuth = (req, res, next) => {
     if (req.user && req.user.is_superadmin) {
-      next();
+        next();
     } else {
-      res.status(401).render('errors/db', { error: 'No tienes acceso a esta página' });
+        res.status(401).render('errors/db', { error: 'No tienes acceso a esta página' });
     }
-  };
+};
 
-  export const isAdmin = (req, res, next) => {
+export const isAdmin = (req, res, next) => {
     if (req.user && req.user.role === 'admin') {
-      return next();
+        return next();
     }
-    res.status(401).json({message: 'No autorizado'});
-  };
-  
-  export const isUser = (req, res, next) => {
+    res.status(401).json({ message: 'No autorizado' });
+};
+
+export const isUser = (req, res, next) => {
     if (req.user) {
-      return next();
+        return next();
     }
     if (!res) {
-      return console.error('Response object is not defined');
+        return console.error('Response object is not defined');
     }
-    res.status(401).json({message: 'No autorizado'});
-  };
-  
-  export const generateResetToken = (email) => {
+    res.status(401).json({ message: 'No autorizado' });
+};
+
+export const generateResetToken = (email) => {
     const token = jwt.sign({ email }, TOKEN_SECRET, { expiresIn: '1h' });
     return token;
-  };
-
+};
 
 export default __dirname;
-
-
-
