@@ -1,3 +1,4 @@
+import logger  from "../config/logger.js";
 import {
   getAllProducts,
   getProductById,
@@ -37,7 +38,7 @@ export const getAllProductsController = async (req, res) => {
     };
     res.render('products', data);
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     res.status(500).send('Internal Server Error');
   }
 };
@@ -52,7 +53,7 @@ export const getProductByIdController = async (req, res) => {
     }
     res.send(product);
   } catch (error) {
-    console.log(error);
+    logger.error(error);
     res.status(500).send('Internal Server Error');
   }
 };

@@ -1,2 +1,31 @@
+{"level":"info","message":"Connected to database","timestamp":"2023-05-30T06:06:40.434Z"}
+{"level":"info","message":"Server running on 8080 port","timestamp":"2023-05-30T06:06:40.452Z"}
+info: Connected to database {"timestamp":"2023-05-30T06:07:15.694Z"}
+info: Server running on 8080 port {"timestamp":"2023-05-30T06:07:15.716Z"}
+info: Connected to database {"timestamp":"2023-05-30T06:07:25.808Z"}
+info: Server running on 8080 port {"timestamp":"2023-05-30T06:07:25.830Z"}
+debug: This is a debug message {"timestamp":"2023-05-30T06:07:45.315Z"}
+http: This is a Http message {"timestamp":"2023-05-30T06:07:45.316Z"}
+info: Testing the logger {"timestamp":"2023-05-30T06:07:45.317Z"}
+debug: This is a debug message {"timestamp":"2023-05-30T06:07:54.893Z"}
+http: This is a Http message {"timestamp":"2023-05-30T06:07:54.894Z"}
+info: Testing the logger {"timestamp":"2023-05-30T06:07:54.895Z"}
+info: Connected to database {"timestamp":"2023-05-30T06:08:26.058Z"}
+info: Server running on 8080 port {"timestamp":"2023-05-30T06:08:26.077Z"}
+debug: This is a debug message {"timestamp":"2023-05-30T06:08:26.381Z"}
+http: This is a Http message {"timestamp":"2023-05-30T06:08:26.382Z"}
+info: Testing the logger {"timestamp":"2023-05-30T06:08:26.382Z"}
+info: Connected to database {"timestamp":"2023-05-30T06:10:13.558Z"}
+info: Server running on 8080 port {"timestamp":"2023-05-30T06:10:13.600Z"}
+debug: This is a debug message {"timestamp":"2023-05-30T06:10:16.189Z"}
+http: This is a Http message {"timestamp":"2023-05-30T06:10:16.190Z"}
+info: Testing the logger {"timestamp":"2023-05-30T06:10:16.190Z"}
+warning: This is a warning message {"timestamp":"2023-05-30T06:10:16.191Z"}
+error: This is an error message {"timestamp":"2023-05-30T06:10:16.192Z"}
+debug: This is a debug message {"timestamp":"2023-05-30T06:10:44.574Z"}
+http: This is a Http message {"timestamp":"2023-05-30T06:10:44.575Z"}
+info: Testing the logger {"timestamp":"2023-05-30T06:10:44.576Z"}
+warning: This is a warning message {"timestamp":"2023-05-30T06:10:44.577Z"}
+error: This is an error message {"timestamp":"2023-05-30T06:10:44.578Z"}
 {"level":"error","message":"This is an error message"}
 {"level":"error","message":"This is an error message"}
