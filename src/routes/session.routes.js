@@ -11,7 +11,7 @@ router.get('/api/session/github', loginGithub);
 router.get('/api/session/githubcallback', loginGithubCallback);
 router.get('/current', currentSession);
 router.post('/session/logout', logoutUser);
-router.get('/reset-password',renderResetPasswordPage);
+router.get('/reset-password/:token', renderResetPasswordPage);
 router.post('/reset-password', resetPassword);
 
 export default router;

@@ -15,10 +15,30 @@ import cookieParser from 'cookie-parser';
 import config from '../src/config/config.js';
 import mockingRouter from './routes/mockingProd.routes.js'
 import logger from './config/logger.js'
+import swaggerJsdoc from 'swagger-jsdoc';
+import swaggerUi from 'swagger-ui-express';
 
 
 const app = express()
 
+
+const swaggerOptions = {
+  swaggerDefinition: {
+    openapi: '3.0.1',
+    info: {
+      title: 'Documentacion proyecto Eccomerce Don Pedro',
+      description: 'Documentacion de la API del proyecto',
+      version: '1.0.0',
+    },
+    servers: [
+      {url: 'http://localhost:8080'},
+      {url: 'http://mysuperappi.io'},
+      {url: 'http://superapi.com'}
+    ]
+  },
+  
+  apis: [`${__dirname}/docs/**/*.yaml`]
+}
 app.use(session({
   secret:'c0d3r',
   resave:true,
@@ -63,7 +83,8 @@ app.get('/', (req, res) => {
 });
 app.get('/mail',async (req, res) => {
 });
-
+const specs = swaggerJsdoc(swaggerOptions);
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(specs));
 let messages = []
 
 mongoose.set('strictQuery', false)

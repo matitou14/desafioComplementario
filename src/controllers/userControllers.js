@@ -5,8 +5,10 @@ import { createHash } from '../utils.js';
 import {createUser} from '../services/users.service.js';
 import logger from '../config/logger.js'
 import { generateResetToken } from '../utils.js';
-import transporter  from '../helpers/nodemailerConfig.js';
+import jwt from 'jsonwebtoken';
+import { resetPassword as resetPasswordService } from '../services/users.service.js';
 const LOCAL_STRATEGY_NAME = 'local';
+const TOKEN_SECRET ='wowisbackend'
 
 // Register
 export const createRegister = (req, res) => {
@@ -83,27 +85,51 @@ export const logoutUser = (req, res) => {
   logger.info('User logged out');
 
 };
+export const sendResetEmail = async (email) => {
+  const resetToken = generateResetToken(email);
+  const resetUrl = `http://localhost:8080/reset-password?token=${resetToken}`;
 
-export const resetPassword = async (req, res) => {
+  const mailOptions = {
+    to: email,
+    subject: 'Restablecer contraseña',
+    html: `Haz clic en el siguiente enlace para restablecer tu contraseña: <a href="${resetUrl}">Restablecer contraseña</a>`,
+  };
+
   try {
-    const { email } = req.body;
-    const resetToken = generateResetToken(email);
-    const resetUrl = `http://localhost:8080/reset-password?token=${resetToken}`;
-
-    const mailOptions = {
-      from: 'mat.rodri@gmail.com',
-      to:'879779b1c1f9b9@inbox.mailtrap.io',
-      subject: 'Restablecimiento de contraseña',
-      html: `Haz clic en el siguiente enlace para restablecer tu contraseña: <a href="${resetUrl}">Restablecer contraseña</a>`,
-    };
-
-    await transporter.sendMail(mailOptions);
-    res.status(200).json({ message: 'Correo electrónico enviado' });
+    await sendEmail(mailOptions);
+    console.log('Correo electrónico enviado');
   } catch (error) {
-    console.error(error);
-    res.status(500).json({ message: 'Error al enviar el correo electrónico' });
+    console.error('Error al enviar el correo electrónico:', error);
+    throw new Error('Error al enviar el correo electrónico');
   }
 };
+
+
 export function renderResetPasswordPage(req, res) {
-  res.render('resetPassword');
+  const { token } = req.params;
+  jwt.verify(token, TOKEN_SECRET, (err, decoded) => {
+    if (err) {
+      // El token es inválido o ha expirado, redirigir a una página para generar un nuevo correo de restablecimiento
+      return res.redirect('/generar-nuevo-correo');
+    }
+
+    // El token es válido, renderizar la vista de restablecimiento de contraseña
+    res.render('reset-password', { token });
+  });
+}
+
+export function resetPassword(req, res) {
+  const { token, password } = req.body;
+  jwt.verify(token, TOKEN_SECRET, (err, decoded) => {
+    if (err) {
+      // El token es inválido o ha expirado, redirigir a una página para generar un nuevo correo de restablecimiento
+      return res.redirect('/generar-nuevo-correo');
+    }
+
+    // El token es válido, procesar el restablecimiento de contraseña utilizando el servicio correspondiente
+    resetPasswordService(decoded.email, password);
+
+    // Redirigir al usuario a la página de inicio de sesión con un mensaje de éxito
+    res.redirect('/login');
+  });
 }

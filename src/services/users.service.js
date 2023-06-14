@@ -53,3 +53,33 @@ export async function login(email, password) {
   }
   return user;
 }
+
+export function resetPassword(email, newPassword) {
+  UserDAO.findOne({ email }, (err, user) => {
+    if (err) {
+      // Manejar el error de búsqueda del usuario
+      console.error(err);
+        res.status(500).json({ message: 'Error al buscar el usuario' });
+      return;
+    }
+    if (!user) {  res.status(404).json({ message: 'Usuario no encontrado' });
+      return;
+
+  }
+  user.password = newPassword;
+  user.save((err) => {
+    if (err) {
+      // Manejar el error al guardar el usuario actualizado
+      console.error(err);
+    
+     res.status(500).json({ message: 'Error al restablecer la contraseña' });
+      return;
+    }
+
+    // La contraseña se ha restablecido exitosamente
+    
+    res.status(200).json({ message: 'Contraseña restablecida exitosamente' });
+  });
+});
+}
+
