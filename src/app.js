@@ -17,6 +17,7 @@ import mockingRouter from './routes/mockingProd.routes.js'
 import logger from './config/logger.js'
 import swaggerJsdoc from 'swagger-jsdoc';
 import swaggerUi from 'swagger-ui-express';
+import logger from '../src/logger.js';
 
 
 const app = express()
