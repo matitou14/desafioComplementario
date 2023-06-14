@@ -106,6 +106,7 @@ export const sendResetEmail = async (email) => {
 
 
 export function renderResetPasswordPage(req, res) {
+<<<<<<< HEAD
   const { token } = req.params;
   jwt.verify(token, TOKEN_SECRET, (err, decoded) => {
     if (err) {
@@ -132,4 +133,8 @@ export function resetPassword(req, res) {
     // Redirigir al usuario a la página de inicio de sesión con un mensaje de éxito
     res.redirect('/login');
   });
+=======
+  const token = req.params.token;
+  res.render('resPas', { token });
+>>>>>>> 165cd5df685b135fb84c685143afa17d20ad09b4
 }
