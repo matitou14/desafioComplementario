@@ -1,0 +1,135 @@
+paths:
+  /cart/{cid}:
+    get:
+      summary: Obtiene un carrito por su ID
+      tags: [Cart]
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          description: ID del carrito
+          type: string
+      responses:
+        '200':
+          description: Éxito
+        '404':
+          description: Carrito no encontrado
+        '500':
+          description: Error interno del servidor
+
+  /cart:
+    post:
+      summary: Crea un nuevo carrito
+      tags: [Cart]
+      security:
+        - bearerAuth: []
+      responses:
+        '201':
+          description: Carrito creado exitosamente
+        '401':
+          description: No autorizado
+        '500':
+          description: Error interno del servidor
+
+  /{cid}/product/{pid}:
+    post:
+      summary: Agrega un producto al carrito
+      tags: [Cart]
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          description: ID del carrito
+          type: string
+        - in: path
+          name: pid
+          required: true
+          description: ID del producto
+          type: string
+      responses:
+        '200':
+          description: Producto agregado exitosamente
+        '404':
+          description: Carrito o producto no encontrado
+        '500':
+          description: Error interno del servidor
+
+  /cart/{cid}/products/{pid}:
+    delete:
+      summary: Elimina un producto del carrito
+      tags: [Cart]
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          description: ID del carrito
+          type: string
+        - in: path
+          name: pid
+          required: true
+          description: ID del producto
+          type: string
+      responses:
+        '200':
+          description: Producto eliminado exitosamente
+        '404':
+          description: Carrito o producto no encontrado
+        '500':
+          description: Error interno del servidor
+
+  /cart/{cid}1:
+    put:
+      summary: Actualiza un carrito
+      tags: [Cart]
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          description: ID del carrito
+          type: string
+      responses:
+        '200':
+          description: Carrito actualizado exitosamente
+        '404':
+          description: Carrito no encontrado
+        '500':
+          description: Error interno del servidor
+  /cart/{cid}/products/{pid}2:
+    put:
+      summary: Actualiza la cantidad de un producto en el carrito
+      tags: [Cart]
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          description: ID del carrito
+          type: string
+        - in: path
+          name: pid
+          required: true
+          description: ID del producto
+          type: string
+      responses:
+        '200':        
+        description: Cantidad de producto actualizada exitosamente
+        '404':
+          description: Carrito o producto no encontrado
+        '500':
+          description: Error interno del servidor
+  /cart/{cid}2:
+    delete:
+      summary: Elimina todos los productos del carrito
+      tags: [Cart]
+      parameters:
+        - in: path
+          name: cid
+          required: true
+          description: ID del carrito
+          type: string
+      responses:
+        '200':
+          description: Todos los productos eliminados exitosamente
+        '404':
+          description: Carrito no encontrado
+        '500':
+          description: Error interno del servidor

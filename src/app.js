@@ -26,7 +26,8 @@ const app = express()
 
 const swaggerOptions = {
   swaggerDefinition: {
-    openapi: '3.0.1',
+    // openapi: '3.0.1',
+    swagger: "2.0",
     info: {
       title: 'Documentacion proyecto Eccomerce Don Pedro',
       description: 'Documentacion de la API del proyecto',
@@ -41,6 +42,7 @@ const swaggerOptions = {
   
   apis: [
     `${__dirname}/../docs/products/products.yaml`,
+    `${__dirname}/../docs/cart/cart.yaml`,
   ]
 }
 app.use(session({

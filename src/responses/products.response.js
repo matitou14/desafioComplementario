@@ -13,17 +13,9 @@ export const success = (res, data, message = "Success") => {
     });
   };
   
-  export const notFound = (res, message = "Not Found") => {
+  export const notFound = (res, message = " Product not found") => {
     return res.status(404).json({
       status: "error",
       message: message,
     });
   };
-  
-  export const unauthorized = (res, message = "Unauthorized") => {
-    return res.status(401).json({
-      status: "error",
-      message: message,
-    });
-  };
-  
