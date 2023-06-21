@@ -119,3 +119,5 @@ mongoose.connect(config.MONGO_URI,
     console.log('Error connecting to database', error);
     return
   });
+
+  export default app;
