@@ -5,8 +5,7 @@ import supertest from 'supertest';
 const request = supertest('http://localhost:8080');
 
 describe('Session Router', () => {
-  // Prueba para iniciar sesión correctamente
-  it('Debería iniciar sesión correctamente', async () => {
+  it('Debería iniciar sesión correctamente y devolver una cookie', async () => {
     const credentials = {
       email: 'mat.mengle@gmail.com',
       password: '$2b$10$lSyXBQbT2WAUZyVxhCHd1OZs7C.OXbeCTeEvfhkSOSAjl9fsgJHY6',
@@ -17,7 +16,7 @@ describe('Session Router', () => {
       .send(credentials);
 
     expect(res.status).to.equal(200);
-    expect(res.body).to.have.property('token');
+    expect(res.headers).to.have.property('set-cookie');
   });
 
   // Prueba para manejar credenciales incorrectas al iniciar sesión
