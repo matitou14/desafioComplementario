@@ -12,10 +12,12 @@ const userSchema = new mongoose.Schema({
         type: mongoose.Schema.Types.ObjectId,
         ref: 'carts',
       },
-    role: {
+      role: {
         type: String,
-        default: 'user',
-    }
+        enum: ['admin', 'premium', 'regular'],
+        default: 'regular'
+      }
+      
 });
 
 
